@@ -24,6 +24,33 @@ export const content = {
       manufacturingText: 'See workshop floors and production equipment. For an individual order, ask us to confirm which processes and inspection records apply.',
       audienceTitle: 'How do you buy?'
     },
+    capabilities: {
+      title: 'Manufacturing capabilities',
+      intro: 'Our manufacturing partners in China support metal fabrication, precision machining and molding for machinery components.',
+      action: 'Discuss your manufacturing requirements',
+      items: {
+        structures: {
+          title: 'Steel structural components',
+          description: 'Structural parts and welded assemblies for construction equipment, with laser cutting, CNC bending and machining options. Share your drawing and inspection requirements for review.',
+          alt: 'Fabricated steel structures staged on the workshop floor'
+        },
+        gears: {
+          title: 'Precision gear components',
+          description: 'Custom gears and transmission components. Hobbing, gear grinding and heat treatment options can be reviewed against your tooth profile, material and accuracy requirements.',
+          alt: 'Machined cylindrical gear components'
+        },
+        tanks: {
+          title: 'Industrial hydraulic reservoirs',
+          description: 'Welded metal reservoirs for industrial machines and hydraulic power units, including laser-welded designs. We review capacity, port layout, internal cleanliness and leak-test requirements with you.',
+          alt: 'Welded metal hydraulic reservoir being loaded for transport'
+        },
+        composites: {
+          title: 'Engineering plastics & composites',
+          description: 'Molded engine hoods, exterior panels, canopies and hollow housings. Process options include PDCPD reaction injection molding, SMC compression molding, LFT-D, rotational molding, RTM, vacuum infusion and FRP hand lay-up.',
+          alt: 'Molded yellow machinery panels staged on workshop stands'
+        }
+      }
+    },
     equipment: {
       title: 'Equipment sourcing',
       description: 'Share your target machine or job requirements so we can review supply options with you.',
@@ -131,6 +158,33 @@ export const content = {
       manufacturingTitle: '走进合作工厂',
       manufacturingText: '查看现场车间和生产设备。您可以按订单要求核对适用的生产工序及检验资料。',
       audienceTitle: '按采购场景进入'
+    },
+    capabilities: {
+      title: '生产加工能力',
+      intro: '依托国内制造合作伙伴，提供工程机械零部件的金属加工、精密机加工与新材料成型配套。',
+      action: '沟通您的加工需求',
+      items: {
+        structures: {
+          title: '工程机械结构件',
+          description: '加工工程机械钢制结构件及焊接总成，工艺涵盖激光切割、数控折弯和机加工。可按图纸核对材料、尺寸及验收要求。',
+          alt: '车间内待周转的钢制结构件'
+        },
+        gears: {
+          title: '精密齿轮件',
+          description: '配套定制齿轮、齿轮柱等传动件。可按齿形、材料和精度要求评审滚齿、磨齿及热处理方案。',
+          alt: '加工后的圆柱齿轮件'
+        },
+        tanks: {
+          title: '工业机械液压油箱',
+          description: '为工业机械和液压泵站配套焊接金属油箱，含激光焊接方案。按项目核对容量、接口布置、内壁清洁及密封检验要求。',
+          alt: '正在装车的焊接金属液压油箱'
+        },
+        composites: {
+          title: '新材料加工',
+          description: '面向发动机罩、外覆盖件、顶棚和中空壳体等应用。工艺包括 PDCPD 反应注射、SMC 模压、LFT-D 长纤热塑在线模压、滚塑、RTM 树脂传递模塑、真空导入及玻璃钢手糊。',
+          alt: '车间支架上的黄色成型覆盖件'
+        }
+      }
     },
     equipment: {
       title: '整机采购',

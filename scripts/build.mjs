@@ -2,7 +2,7 @@ import { access, cp, mkdir, readdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { content } from '../src/content.mjs';
-import { equipment, workshop } from '../src/media.mjs';
+import { capabilityImages, equipment, workshop } from '../src/media.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
@@ -93,6 +93,20 @@ function lead(t, extra = '') {
     t.description + '</p>' + extra + '</div></div></section>';
 }
 
+function capabilitySection(locale, topic) {
+  const cards = Object.entries(topic.items).map(([key, item]) => {
+    const photo = capabilityImages[key];
+    return '<article class="capability-card"><img src="' + asset(photo.file) + '" width="' +
+      photo.width + '" height="' + photo.height + '" alt="' + escapeHtml(item.alt) + '" loading="lazy" decoding="async">' +
+      '<div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.description) + '</p></div></article>';
+  }).join('');
+  return '<section class="section capability-section" id="capabilities" aria-labelledby="capabilities-title"><div class="wrap">' +
+    '<div class="capability-heading"><div><h2 id="capabilities-title">' + escapeHtml(topic.title) +
+    '</h2><p>' + escapeHtml(topic.intro) + '</p></div>' +
+    button(contactFor(locale), topic.action, 'dark-outline') + '</div>' +
+    '<div class="capability-grid">' + cards + '</div></div></section>';
+}
+
 function home(locale, t) {
   const tiles = ['equipment', 'parts'].map((key) =>
     '<a class="sourcing-tile" href="' + pathFor(locale, key) + '"><h3>' +
@@ -105,13 +119,13 @@ function home(locale, t) {
   return '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><h1>' +
     t.home.headline.map((line) => '<span>' + line + '</span>').join(' ') +
     '</h1><p>' + t.home.intro + '</p><div class="button-row">' + button(contactFor(locale), t.request) +
-    button(pathFor(locale, 'manufacturing'), t.factoryLink, 'outline') +
+    button('#capabilities', t.capabilities.title, 'outline') +
     '</div></div><figure class="hero-photo"><img src="' + asset('partner-workshop.webp') +
     '" srcset="' + asset('partner-workshop-small.webp') + ' 800w, ' + asset('partner-workshop.webp') +
     ' 1680w" sizes="(max-width: 800px) 100vw, 58vw" width="1680" height="1260" alt="' + t.photoCredit +
     '" fetchpriority="high"><figcaption>' + t.photoCredit + '</figcaption></figure></div></section>' +
     '<section class="section wrap sourcing"><h2>' + t.home.sourcing + '</h2><div class="sourcing-grid">' +
-    tiles + '</div></section>' +
+    tiles + '</div></section>' + capabilitySection(locale, t.capabilities) +
     '<section class="factory-band"><div class="wrap factory-band-inner"><img loading="lazy" decoding="async" src="' +
     asset('workshop-machinery.webp') + '" alt="' + t.photoCredit + '"><div><h2>' + t.home.manufacturingTitle +
     '</h2><p>' + t.home.manufacturingText + '</p>' + button(pathFor(locale, 'manufacturing'), t.factoryLink, 'outline') +
@@ -198,6 +212,7 @@ function head(locale, key, t) {
 
 async function render() {
   await Promise.all([
+    ...Object.values(capabilityImages).map(({ file }) => access(join(root, 'src/assets', file))),
     ...workshop.map(({ file }) => access(join(root, 'src/assets', file))),
     ...equipment.map(({ file }) => access(join(root, 'src/assets', file)))
   ]);
