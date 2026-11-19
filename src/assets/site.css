@@ -120,7 +120,6 @@ ol.detail-list { list-style: decimal; padding-inline-start: 1.4rem; }
 .media-card { background: var(--white); border: 1px solid var(--line); }
 .media-card img { width: 100%; aspect-ratio: 400 / 319; object-fit: cover; }
 .media-card figcaption { font-size: 1rem; font-weight: 660; padding: .8rem; }
-.source-link { display: inline-block; margin-top: .65rem; font-size: .875rem; color: var(--muted); }
 
 .inquiry-layout { display: grid; grid-template-columns: .8fr 1.35fr; align-items: start; gap: clamp(24px, 6vw, 95px); }
 .inquiry-layout h2 { margin-bottom: .75rem; }

@@ -68,13 +68,12 @@ function footer(locale, t) {
     '<p>' + t.brandLine + '</p></div><nav aria-label="' + (locale === 'en' ? 'Footer navigation' : '页脚导航') + '">' + nav + '</nav></div></footer>';
 }
 
-function sources(locale, photos, t, album) {
+function photoGallery(locale, photos) {
   const cards = photos.map((photo) =>
     '<figure class="media-card"><img loading="lazy" decoding="async" src="' + asset(photo.file) + '" alt="' + photo[locale] + '">' +
-    '<figcaption><a href="' + photo.source + '">' + photo[locale] + '</a></figcaption></figure>'
+    '<figcaption>' + photo[locale] + '</figcaption></figure>'
   ).join('');
-  return '<div class="gallery-grid">' + cards + '</div>' +
-    '<a class="source-link" href="' + album + '">' + t.manufacturing.gallerySource + '</a>';
+  return '<div class="gallery-grid">' + cards + '</div>';
 }
 
 function checklist(title, entries, ordered = false) {
@@ -129,8 +128,8 @@ function sourcing(locale, page, t) {
 
 function manufacturing(locale, t) {
   const topic = t.manufacturing;
-  const gallery = (items, title, album) =>
-    '<section class="gallery-section"><h2>' + title + '</h2>' + sources(locale, items, t, album) + '</section>';
+  const gallery = (items, title) =>
+    '<section class="gallery-section"><h2>' + title + '</h2>' + photoGallery(locale, items) + '</section>';
   return lead(topic) +
     '<section class="section wrap tour-section"><figure class="tour-figure"><img src="' + asset('tour-poster.webp') +
     '" loading="lazy" decoding="async" alt="' + t.photoCredit + '"><div class="video-slot" data-video-slot hidden></div></figure>' +
@@ -138,8 +137,8 @@ function manufacturing(locale, t) {
     asset('workshop-tour.mp4') + '" data-video-label="' + topic.videoLabel + '" hidden>' + topic.play + '</button>' +
     '<noscript><a href="' + asset('workshop-tour.mp4') + '">' + topic.videoFallback + '</a></noscript></div></section>' +
     '<div class="section wrap gallery-stack">' +
-    gallery(equipment, topic.equipmentTitle, 'https://www.yanxuxz.com/case/1/') +
-    gallery(workshop, topic.workshopTitle, 'https://www.yanxuxz.com/case/3/') + '</div>' +
+    gallery(equipment, topic.equipmentTitle) +
+    gallery(workshop, topic.workshopTitle) + '</div>' +
     '<section class="section cta-section"><div class="wrap cta-inner"><div><h2>' + topic.qualityTitle + '</h2><p>' +
     topic.qualityText + '</p></div>' + button(contactFor(locale), t.request) + '</div></section>';
 }
