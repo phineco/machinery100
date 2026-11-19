@@ -104,13 +104,14 @@ export const content = {
     contact: {
       title: 'Tell us what you’re sourcing',
       description: 'A list of models, a part number or a brief description of the job is enough to start.',
-      formTitle: 'Prepare an inquiry',
-      note: 'This form creates a draft in your browser. You can download it or use an available contact channel to send it.',
+      formTitle: 'Send an inquiry',
+      note: 'Share your requirements with our team. You can also save a draft to finish later.',
       draftNote: 'Your draft is ready to review.',
       select: 'Choose an inquiry type',
       labels: {
         name: 'Name',
         email: 'Email',
+        phoneNumber: 'Phone or WhatsApp (optional)',
         country: 'Destination country or region',
         type: 'Inquiry type',
         requirements: 'Requirements'
@@ -124,10 +125,23 @@ export const content = {
         project: 'Include the application, equipment requirements, delivery location and project schedule.'
       },
       prepare: 'Prepare draft',
+      submit: 'Send inquiry',
+      consent: 'I agree to the use of my submitted information to respond to this inquiry.',
+      budget: 'Combined inquiry length:',
+      messages: {
+        sending: 'Sending your inquiry…',
+        success: 'Your inquiry has been submitted.',
+        tooLong: 'Please shorten your requirements. The full inquiry includes your destination and inquiry type.',
+        invalid: 'Check the form fields and your email address before sending.',
+        unavailable: 'Online inquiries are temporarily unavailable. Your input has been kept.',
+        failed: 'Your inquiry could not be sent. Your input has been kept. Please try again later.',
+        unconfirmed: 'We could not confirm receipt. Your input has been kept. Please check before sending again.'
+      },
       download: 'Download draft',
       emailAction: 'Open in email',
       briefLabel: 'Inquiry draft',
-      noScript: 'Enable JavaScript to prepare an inquiry draft.',
+      noScript: 'Enable JavaScript to send an inquiry or prepare a draft.',
+      emailContact: 'Contact by email',
       whatsapp: 'Chat on WhatsApp'
     },
     ctaTitle: 'Have a model, part number or purchase list?',
@@ -239,13 +253,14 @@ export const content = {
     contact: {
       title: '告诉我们您的采购需求',
       description: '一份机型清单、一个零件号或一段工况描述，都可以作为沟通起点。',
-      formTitle: '填写询盘草稿',
-      note: '表单在您的浏览器内生成草稿。您可以下载，也可以通过页面提供的联系渠道发送。',
+      formTitle: '发送询盘',
+      note: '填写采购需求后可直接发送给我们，也可以先保存草稿。',
       draftNote: '询盘草稿已生成，请核对内容。',
       select: '请选择采购类型',
       labels: {
         name: '联系人',
         email: '邮箱',
+        phoneNumber: '电话或 WhatsApp（选填）',
         country: '目的地国家或地区',
         type: '采购类型',
         requirements: '采购需求'
@@ -259,10 +274,23 @@ export const content = {
         project: '说明项目工况、设备要求、交付地点及时间。'
       },
       prepare: '生成草稿',
+      submit: '发送询盘',
+      consent: '我同意使用本次提交的信息回复我的询盘。',
+      budget: '合并询盘长度：',
+      messages: {
+        sending: '正在发送询盘……',
+        success: '您的询盘已提交。',
+        tooLong: '请精简采购需求。合并留言包含目的地和采购类型。',
+        invalid: '请检查表单填写内容，并确认邮箱地址无误。',
+        unavailable: '在线询盘暂不可用，已保留填写内容。',
+        failed: '询盘暂时无法送达，已保留填写内容。请稍后重试。',
+        unconfirmed: '暂未确认收件结果，已保留填写内容。请先核实，再决定是否重发。'
+      },
       download: '下载草稿',
       emailAction: '使用邮件发送',
       briefLabel: '询盘草稿',
-      noScript: '启用 JavaScript 后可生成询盘草稿。',
+      noScript: '启用 JavaScript 后可发送询盘或生成草稿。',
+      emailContact: '通过邮件联系',
       whatsapp: '通过 WhatsApp 联系'
     },
     ctaTitle: '手上有机型、件号或采购清单？',

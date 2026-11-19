@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { content } from '../src/content.mjs';
 import { capabilityImages, equipment, workshop } from '../src/media.mjs';
+import { inquiryLimits } from '../src/assets/inquiry-payload.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
@@ -166,21 +167,30 @@ function contact(locale, t) {
   const c = t.contact;
   const options = Object.entries(c.types).map(([key, label]) => '<option value="' + key + '">' + label + '</option>').join('');
   const hints = Object.entries(c.hints).map(([key, text]) => ' data-hint-' + key + '="' + escapeHtml(text) + '"').join('');
-  const field = (key, type, autocomplete, max) =>
+  const messages = Object.entries(c.messages).map(([key, text]) => ' data-' + key + '="' + escapeHtml(text) + '"').join('');
+  const field = (key, type, autocomplete, required = true) =>
     '<label>' + c.labels[key] + '<input name="' + key + '" type="' + type + '" autocomplete="' + autocomplete +
-    '" maxlength="' + max + '" required></label>';
+    '" maxlength="' + inquiryLimits[key] + '"' + (required ? ' required' : '') + '></label>';
   const config = email ? ' data-contact-email="' + escapeHtml(email) + '"' : '';
-  const channels = whatsapp ? button('https://wa.me/' + whatsapp, c.whatsapp, 'dark') : '';
+  const channels = '<div class="button-row">' +
+    (email ? button('mailto:' + email, c.emailContact, 'dark-outline') : '') +
+    (whatsapp ? button('https://wa.me/' + whatsapp, c.whatsapp, 'dark-outline') : '') + '</div>';
   return lead(c) + '<section class="section wrap inquiry-layout"><div><h2>' + c.formTitle + '</h2><p>' + c.note + '</p>' +
     channels + '</div><div><noscript><p>' + c.noScript + '</p></noscript><form class="inquiry-form" method="post" data-inquiry' +
-    config + ' data-subject="' + c.briefLabel + '">' +
-    '<div class="form-grid">' + field('name', 'text', 'name', 120) + field('email', 'email', 'email', 254) +
-    field('country', 'text', 'country-name', 120) +
+    config + ' data-subject="' + escapeHtml(c.briefLabel) + '">' +
+    '<fieldset class="inquiry-fields"><div class="form-grid">' + field('name', 'text', 'name') + field('email', 'email', 'email') +
+    field('phoneNumber', 'tel', 'tel', false) + field('country', 'text', 'country-name') +
     '<label>' + c.labels.type + '<select name="type" required><option value="">' + c.select + '</option>' +
     options + '</select></label></div>' +
-    '<label>' + c.labels.requirements + '<textarea name="requirements" required maxlength="2000" rows="5" aria-describedby="inquiry-hint"></textarea></label>' +
+    '<label>' + c.labels.requirements + '<textarea name="requirements" required maxlength="' +
+    inquiryLimits.message + '" rows="5" aria-describedby="inquiry-hint inquiry-budget"></textarea></label>' +
     '<p class="form-hint" id="inquiry-hint"' + hints + '>' + c.hints.default + '</p>' +
-    '<button type="submit" class="button button--dark" disabled>' + c.prepare + '</button>' +
+    '<p class="form-hint" id="inquiry-budget">' + c.budget + ' <span data-budget></span></p>' +
+    '<label hidden>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label>' +
+    '<label class="inquiry-consent"><input type="checkbox" name="consent" value="yes" required><span>' + c.consent + '</span></label>' +
+    '<div class="button-row"><button type="submit" class="button button--dark" disabled>' + c.submit +
+    '</button><button type="button" class="button button--dark-outline" data-prepare-draft disabled>' + c.prepare +
+    '</button></div></fieldset><p data-inquiry-status role="status" tabindex="-1"' + messages + '></p>' +
     '<section class="draft" data-draft hidden><p role="status" tabindex="-1">' + c.draftNote + '</p><pre tabindex="0" aria-label="' +
     c.briefLabel + '" data-draft-preview></pre><div class="button-row"><a class="button button--dark" download="machinery100-inquiry.txt" data-download>' +
     c.download + '</a>' + (email ? '<a class="button button--dark-outline" data-email-draft>' + c.emailAction + '</a>' : '') +

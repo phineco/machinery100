@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "start": "node scripts/preview.mjs --production",
     "preview": "node scripts/preview.mjs",
     "dev": "npm run build && npm run preview"
   }

@@ -3,10 +3,13 @@ import { stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createInquiryHandler } from './inquiry-api.mjs';
 
 const base = fileURLToPath(new URL('../dist/', import.meta.url));
 const port = Number(process.env.PORT ?? '4173');
 const host = '127.0.0.1';
+const production = process.argv.includes('--production');
+const handleInquiry = createInquiryHandler({ production });
 const mime = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -20,7 +23,11 @@ const mime = {
 
 await stat(join(base, 'index.html'));
 
-createServer(async (request, response) => {
+const server = createServer(async (request, response) => {
+  if (request.url.split('?')[0] === '/api/inquiries') {
+    await handleInquiry(request, response);
+    return;
+  }
   if (!['GET', 'HEAD'].includes(request.method)) {
     response.writeHead(405, { Allow: 'GET, HEAD' }).end();
     return;
@@ -78,4 +85,8 @@ createServer(async (request, response) => {
   response.writeHead(status, headers);
   if (request.method === 'HEAD') response.end();
   else createReadStream(file).pipe(response);
-}).listen(port, host, () => console.log('Local preview: http://' + host + ':' + port + '/'));
+});
+
+server.listen(port, host, () => {
+  console.log((production ? 'Site server: ' : 'Local preview: ') + 'http://' + host + ':' + server.address().port + '/');
+});

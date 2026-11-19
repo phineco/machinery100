@@ -136,13 +136,18 @@ ol.detail-list { list-style: decimal; padding-inline-start: 1.4rem; }
 .inquiry-layout h2 { margin-bottom: .75rem; }
 .inquiry-layout > div > p { color: var(--muted); margin-bottom: 1.25rem; max-width: 44ch; }
 .inquiry-form { padding: clamp(17px, 3vw, 36px); background: var(--white); border: 1px solid var(--line); display: grid; gap: 1rem; align-items: start; }
+.inquiry-fields { display: grid; gap: 1rem; min-width: 0; margin: 0; padding: 0; border: 0; }
 .inquiry-form label { display: grid; gap: .35rem; font-weight: 680; }
 .inquiry-form :is(input, select, textarea) { width: 100%; min-width: 0; min-height: 44px; background: #fff; color: var(--ink); padding: .55rem; border: 1px solid #8a9589; border-radius: 0; font-weight: 450; }
 .inquiry-form select { appearance: none; padding-right: 2rem; background: #fff; background-image: linear-gradient(45deg, transparent 50%, #384638 50%), linear-gradient(135deg, #384638 50%, transparent 50%); background-position: calc(100% - 17px) center, calc(100% - 12px) center; background-size: 5px 5px; background-repeat: no-repeat; }
 .inquiry-form textarea { resize: vertical; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .form-hint { color: var(--muted); font-size: .9rem; margin-top: -.6rem; }
-.inquiry-form button[type="submit"] { justify-self: start; }
+.inquiry-form .inquiry-consent { display: flex; gap: .55rem; align-items: start; font-weight: 500; }
+.inquiry-form .inquiry-consent input { appearance: auto; width: 1rem; min-height: 1rem; margin: .29rem 0 0; flex: 0 0 auto; }
+[data-inquiry-status]:empty { display: none; }
+[data-inquiry-status][data-state="error"], [data-budget].over { color: #953624; }
+[data-inquiry-status][data-state="success"] { color: #295f3d; }
 .draft { border-top: 1px solid var(--line); padding-top: 1rem; }
 .draft pre { font: inherit; white-space: pre-wrap; word-break: break-word; padding: .8rem; background: var(--paper); border: 1px solid var(--line); max-height: 17rem; overflow: auto; }
 
