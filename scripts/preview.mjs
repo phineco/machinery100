@@ -21,7 +21,12 @@ const mime = {
   '.xml': 'application/xml; charset=utf-8'
 };
 
-await stat(join(base, 'index.html'));
+try {
+  await stat(join(base, 'index.html'));
+} catch (error) {
+  if (!production || error.code !== 'ENOENT') throw error;
+  await import('./build.mjs');
+}
 
 const server = createServer(async (request, response) => {
   if (request.url.split('?')[0] === '/api/inquiries') {

@@ -4,7 +4,7 @@
 
 ## 本地预览
 
-需要 Node.js 22 或以上版本。项目无需安装第三方依赖。
+需要 Node.js 20 或以上版本。项目无需安装第三方依赖，宝塔的 Yarn 一键安装可以直接读取仓库中的 `yarn.lock`。
 
 ```sh
 npm run dev
@@ -28,7 +28,9 @@ npm run dev
 npm run build
 ```
 
-输出为 `dist/`。生产环境可运行 `npm start`，由 Node.js 同时提供页面和询盘接口。若现有 Nginx 直接托管 `dist/`，把同源路径 `/api/inquiries` 转发到 Node.js 进程即可。进程默认监听 `127.0.0.1:4173`，可通过 `PORT` 修改端口。
+输出为 `dist/`。生产环境可运行 `npm start`，由 Node.js 同时提供页面和询盘接口。首次启动时若缺少 `dist/index.html`，会先自动构建。更新代码或公开配置后，请执行 `npm run build` 再重启。
+
+宝塔 Node 项目请选择 Node.js 20 或以上版本，项目目录使用含 `package.json` 的仓库根目录，启动脚本选择 `start`。进程默认监听 `127.0.0.1:4173`，宝塔反代端口需与 `PORT` 一致。若现有 Nginx 直接托管 `dist/`，把同源路径 `/api/inquiries` 转发到 Node.js 进程即可。
 
 构建时可提供以下公开信息。
 
