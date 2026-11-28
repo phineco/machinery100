@@ -71,7 +71,7 @@ const button = (href, label, variant = 'primary') =>
   '<a class="button button--' + variant + '" href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
 
 function wordmark(locale) {
-  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true">CED</span><span class="brand-name">China Equipment Direct<small>' + content[locale].brandLine + '</small></span></a>';
+  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true">CED</span><span class="brand-name">' + brand + '</span></a>';
 }
 
 function header(locale, page, t) {
