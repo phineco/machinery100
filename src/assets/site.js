@@ -26,6 +26,46 @@ if (menu && nav) {
   });
 }
 
+const catalogSearch = document.querySelector('[data-catalog-search]');
+if (catalogSearch) {
+  const query = catalogSearch.querySelector('input');
+  const results = catalogSearch.querySelector('.search-results');
+  const rows = [...results.querySelectorAll('li')];
+  const empty = results.querySelector('[data-no-match]');
+  const inquiryLink = empty.querySelector('a');
+  const inquiryUrl = new URL(inquiryLink.href);
+  function filterCategories() {
+    const term = query.value.trim();
+    const words = term.toLowerCase().split(/\s+/);
+    let count = 0;
+    for (const row of rows) {
+      const name = row.dataset.searchName.toLowerCase();
+      row.hidden = !words.every((word) => name.includes(word));
+      if (!row.hidden) count++;
+    }
+    empty.hidden = count > 0;
+    inquiryUrl.searchParams.set('q', term);
+    inquiryLink.href = inquiryUrl.href;
+    results.hidden = !term;
+  }
+  catalogSearch.hidden = false;
+  query.addEventListener('input', filterCategories);
+  query.addEventListener('focus', filterCategories);
+  catalogSearch.addEventListener('focusout', (event) => {
+    if (!catalogSearch.contains(event.relatedTarget)) results.hidden = true;
+  });
+  catalogSearch.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      query.focus();
+      results.hidden = true;
+    }
+    if (event.key === 'ArrowDown' && event.target === query && !results.hidden) {
+      event.preventDefault();
+      (results.querySelector('li:not([hidden]) a') ?? inquiryLink).focus();
+    }
+  });
+}
+
 const play = document.querySelector('[data-video]');
 const slot = document.querySelector('[data-video-slot]');
 if (play && slot) {
@@ -60,7 +100,13 @@ if (form) {
   const download = form.querySelector('[data-download]');
   const emailDraft = form.querySelector('[data-email-draft]');
   const validTypes = new Set([...type.options].map((option) => option.value));
-  const fromQuery = new URL(location.href).searchParams.get('type');
+  const params = new URL(location.href).searchParams;
+  const fromQuery = params.get('type');
+  const items = JSON.parse(document.getElementById('inquiry-items').textContent);
+  const id = params.get('item');
+  const item = Object.hasOwn(items, id) && items[id].type === fromQuery ? items[id] : null;
+  const term = (params.get('q') ?? '').slice(0, 100);
+  if (item || term) form.elements.requirements.value = item?.name ?? term;
   const initialType = validTypes.has(fromQuery) ? fromQuery : '';
   const locale = document.documentElement.lang;
   let draftUrl;
@@ -74,6 +120,9 @@ if (form) {
       const url = new URL(language.href);
       if (type.value) url.searchParams.set('type', type.value);
       else url.searchParams.delete('type');
+      if (item && item.type === type.value) url.searchParams.set('item', id);
+      else url.searchParams.delete('item');
+      if (term) url.searchParams.set('q', term);
       language.href = url.pathname + url.search;
     }
   }

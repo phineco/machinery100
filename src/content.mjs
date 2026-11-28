@@ -3,23 +3,28 @@ export const content = {
     language: 'English',
     skip: 'Skip to content',
     menu: 'Menu',
-    brandLine: 'Equipment & parts sourcing',
+    brandLine: 'Compact machines, attachments and spare parts',
     nav: {
       home: 'Home',
-      equipment: 'Equipment',
+      equipment: 'Machines',
+      attachments: 'Attachments',
       parts: 'Parts',
-      manufacturing: 'Manufacturing partners',
-      delivery: 'Delivery & support',
+      manufacturing: 'Manufacturing',
+      delivery: 'Delivery',
       contact: 'Contact'
     },
-    request: 'Send your requirements',
+    request: 'Get a quote',
     factoryLink: 'Explore manufacturing partners',
     photoCredit: 'On-site photo at a manufacturing partner’s workshop in China',
     home: {
-      title: 'Construction equipment and parts from China',
-      headline: ['Construction equipment', 'and parts from China'],
-      intro: 'We work with manufacturing partners in China to help dealers, repair businesses and contractors source equipment and parts.',
-      sourcing: 'What are you sourcing?',
+      title: 'Mini excavators, attachments and spare parts from China',
+      search: 'Search the catalog',
+      placeholder: 'Try mini excavator, quick coupler or hydraulic pump',
+      empty: 'No matching category. Send the model or part number for a fit check.',
+      inquire: 'Ask about this item',
+      caption: 'Mini excavator · equipment illustration',
+      intro: 'Source mini and compact machines from factories and suppliers in China. Match attachments to small, medium and large machines, or request spare parts by model or part number.',
+      sourcing: 'Browse the sourcing catalog',
       manufacturingTitle: 'Inside our manufacturing partners’ workshops',
       manufacturingText: 'See workshop floors and production equipment. For an individual order, ask us to confirm which processes and inspection records apply.',
       audienceTitle: 'How do you buy?'
@@ -52,8 +57,8 @@ export const content = {
       }
     },
     equipment: {
-      title: 'Equipment sourcing',
-      description: 'Share your target machine or job requirements so we can review supply options with you.',
+      title: 'Mini & compact machines',
+      description: 'Explore mini excavators, skid steers, compact loaders and rollers. Share the site access, operating weight and configuration you need.',
       checklistTitle: 'What to include',
       checklist: [
         ['Machine or application', 'Tell us the equipment type, target model or the job it needs to do.'],
@@ -62,8 +67,19 @@ export const content = {
       ],
       action: 'Send equipment requirements'
     },
+    attachments: {
+      title: 'Attachments by application',
+      description: 'Source buckets, breakers, augers and quick couplers for small, medium and large machines. We check the interface for your specific carrier.',
+      action: 'Request an attachment fit check',
+      checklistTitle: 'How we check the fit',
+      checklist: [
+        ['Carrier and task', 'Share the machine make, model, operating weight and the work you need to do.'],
+        ['Mounting interface', 'Include the pin diameters, pin centers and bracket width, or email a photo of the mount.'],
+        ['Hydraulic requirements', 'For powered tools, include available flow and pressure. We review these with the supplier before quoting.']
+      ]
+    },
     parts: {
-      title: 'Parts sourcing',
+      title: 'Machinery spare parts',
       description: 'Share a part number or machine model so we can review fit and availability.',
       checklistTitle: 'What helps us check fit',
       checklist: [
@@ -116,9 +132,10 @@ export const content = {
         type: 'Inquiry type',
         requirements: 'Requirements'
       },
-      types: { equipment: 'Equipment sourcing', parts: 'Parts & fit check', dealer: 'Dealer & bulk inquiry', project: 'Project equipment inquiry' },
+      types: { equipment: 'Equipment sourcing', attachments: 'Attachment fit check', parts: 'Parts & fit check', dealer: 'Dealer & bulk inquiry', project: 'Project equipment inquiry' },
       hints: {
-        default: 'Include the equipment or parts you need and the expected quantity.',
+        default: 'Include the machine, attachment or part you need and the expected quantity.',
+        attachments: 'Include the carrier model, operating weight, mounting interface and intended task.',
         equipment: 'Include the target machine, application or configuration, quantity and delivery window.',
         parts: 'Include the part number or machine model, quantity and any dimensions you know.',
         dealer: 'Include the product categories, expected volumes and the market you supply.',
@@ -152,23 +169,28 @@ export const content = {
     language: '简体中文',
     skip: '跳到正文',
     menu: '菜单',
-    brandLine: '工程机械与配件采购',
+    brandLine: '小微工程机械、属具与配件采购',
     nav: {
       home: '首页',
-      equipment: '整机采购',
+      equipment: '小微整机',
+      attachments: '属具',
       parts: '配件采购',
       manufacturing: '合作工厂',
       delivery: '交付与支持',
       contact: '联系'
     },
-    request: '提交采购需求',
+    request: '获取报价',
     factoryLink: '了解合作工厂',
     photoCredit: '中国合作工厂车间实拍',
     home: {
-      title: '中国工程机械与配件采购',
-      headline: ['中国工程机械', '与配件采购'],
-      intro: '我们与中国制造合作伙伴协作，为经销商、维修商和工程承包商对接整机与配件采购。',
-      sourcing: '您需要采购什么？',
+      title: '小微工程机械、大中小型主机属具与配件采购',
+      search: '搜索采购目录',
+      placeholder: '试试微型挖掘机、快换接头或液压泵',
+      empty: '目录暂无匹配类别，可提交机型或件号，由我们核对。',
+      inquire: '询问此产品',
+      caption: '微型挖掘机 · 机型示意图',
+      intro: '对接中国源头工厂与供应商，采购小微工程机械。属具覆盖大、中、小型主机，可按机型与接口核对；维修配件可凭机型或件号询价。',
+      sourcing: '浏览采购目录',
       manufacturingTitle: '走进合作工厂',
       manufacturingText: '查看现场车间和生产设备。您可以按订单要求核对适用的生产工序及检验资料。',
       audienceTitle: '按采购场景进入'
@@ -201,8 +223,8 @@ export const content = {
       }
     },
     equipment: {
-      title: '整机采购',
-      description: '告诉我们目标机型或实际工况，我们会根据需求确认可供选项。',
+      title: '小微工程机械',
+      description: '按作业空间和工作重量选微型挖掘机、滑移装载机、小型装载机或压路机，再与供应商核对具体配置。',
       checklistTitle: '建议提供的信息',
       checklist: [
         ['机型或应用场景', '提供设备类别、目标机型，或说明设备需要完成什么作业。'],
@@ -211,8 +233,19 @@ export const content = {
       ],
       action: '提交整机需求'
     },
+    attachments: {
+      title: '工程机械属具',
+      description: '为大、中、小型主机选配挖斗、破碎锤、螺旋钻和快换接头。按作业用途选型，再核对主机接口。',
+      action: '咨询属具适配',
+      checklistTitle: '如何核对适配',
+      checklist: [
+        ['主机与工况', '提供品牌、机型、工作重量以及要完成的作业。'],
+        ['安装接口', '提供销轴直径、中心距和耳间距，也可通过邮件发送接口照片。'],
+        ['液压参数', '液压属具需核对主机流量和压力，我们会与供应商确认后报价。']
+      ]
+    },
     parts: {
-      title: '配件采购',
+      title: '工程机械配件',
       description: '提供零件号或设备型号，我们会据此核对适配和供货情况。',
       checklistTitle: '核对适配需要的信息',
       checklist: [
@@ -265,9 +298,10 @@ export const content = {
         type: '采购类型',
         requirements: '采购需求'
       },
-      types: { equipment: '整机采购', parts: '配件采购与适配', dealer: '经销与批量采购', project: '工程项目采购' },
+      types: { equipment: '整机采购', attachments: '属具选型与适配', parts: '配件采购与适配', dealer: '经销与批量采购', project: '工程项目采购' },
       hints: {
-        default: '说明需要的整机或配件和预计数量。',
+        default: '说明需要的整机、属具或配件和预计数量。',
+        attachments: '请提供主机型号、工作重量、接口形式及作业用途。',
         equipment: '说明目标机型、工况或配置、数量和计划交付时间。',
         parts: '提供零件号或整机型号、预计数量和已知尺寸。',
         dealer: '说明采购品类、预计采购量和销售市场。',

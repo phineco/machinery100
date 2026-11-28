@@ -1,6 +1,6 @@
-# Machinery100
+# China Equipment Direct
 
-工程机械和配件出海独立站框架。中英文页面覆盖首页、整机采购、配件采购、合作工厂、交付与支持、联系询盘。
+工程机械出海采购站。中英文页面覆盖首页、小微整机、属具、配件、合作工厂、交付与支持和联系询盘。
 
 ## 本地预览
 
@@ -16,9 +16,9 @@ npm run dev
 
 ## 内容与询盘
 
-- `src/content.mjs` 保存中英文内容。首版按需求承接整机、配件、经销和工程项目，产品资料齐备后可扩充分类与详情页。
+- `src/content.mjs` 保存中英文页面文案。`src/catalog.json` 单独维护两种语言的品类，初始数据来自《01_产品类目清单》。品类编号用于搜索结果定位和双语询价预填，具体型号与供货条件由业务核实。
 - [首页生产加工能力来源](docs/manufacturing-capability-sources.md)记录抖音作品标题分析、新材料工艺和首页图片出处。
-- `src/media.mjs` 保存岩旭官网图片的双语描述与单图出处，网页图注只展示设备或场地名称。首页实拍来自本地 `IMG_4758.HEIC`，首页车间近景来自 `IMG_4768.HEIC`。巡览短片选自 `IMG_4760.MOV` 和 `IMG_4759.MOV`，剪辑与稳像后作为无声 MP4 加载。
+- `src/media.mjs` 保存设备与场地实拍的双语描述和出处。首屏小挖使用标明为示意图的 AI 生成图。首页车间近景来自 `IMG_4768.HEIC`。巡览短片选自 `IMG_4760.MOV` 和 `IMG_4759.MOV`。
 - [生产设备相册](https://www.yanxuxz.com/case/1/)与[厂房环境相册](https://www.yanxuxz.com/case/3/)的选用图片均保存在 `src/assets/`，页面浏览时从本站加载。合作工厂照片的公开使用范围由业务方在上线前确认。
 - 询盘表单支持直接提交和下载草稿。网站通过同源 `POST /api/inquiries` 转发到 Scylla Light 使用的 Java 询盘接口。返回符合约定的确认后清空表单，发送失败或结果未确认时保留输入。草稿和可选的邮件、WhatsApp 联系渠道仍可使用。
 
@@ -36,9 +36,12 @@ npm run build
 
 | 变量 | 用途 |
 | --- | --- |
-| `SITE_URL` | 正式 HTTPS 站点来源，如 `https://example.com`，用于双语 canonical、hreflang 和 sitemap。空值为预览模式。 |
-| `CONTACT_EMAIL` | 对外接收询盘的邮箱。 |
-| `WHATSAPP_NUMBER` | 带国家区号的手机号，仅数字。 |
+| `SITE_URL` | 正式 HTTPS 站点来源，默认 `https://www.machinery100.com`，用于双语 canonical、hreflang 和 sitemap。 |
+| `CONTACT_EMAIL` | 公开联系邮箱，默认 `machinery100.china@gmail.com`。 |
+| `WHATSAPP_NUMBER` | 公开号码，含国家区号且仅数字，默认 `8618948913729`。 |
+| `FACEBOOK_URL` | 官方 Facebook 主页的 HTTPS 链接，配置并构建后出现在全站悬浮联系菜单。 |
+
+`npm run dev` 构建禁止索引的本地预览。生产发布时执行 `npm run build`，然后可在已验证的 Google Search Console 站点资源提交 `/sitemap.xml`。
 
 ## 生产询盘配置
 

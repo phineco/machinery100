@@ -1,7 +1,7 @@
 export const inquiryLimits = Object.freeze({ name: 64, email: 64, phoneNumber: 64, country: 100, message: 1024 });
 
 const locales = new Set(['en', 'zh-CN']);
-const types = new Set(['equipment', 'parts', 'dealer', 'project']);
+const types = new Set(['equipment', 'attachments', 'parts', 'dealer', 'project']);
 const fields = ['name', 'email', 'phoneNumber', 'country', 'type', 'requirements', 'locale', 'consent', 'website'];
 const emailPattern = /^[^\s<>@"(),:;]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i;
 const escaped = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };

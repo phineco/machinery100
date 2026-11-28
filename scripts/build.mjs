@@ -1,25 +1,35 @@
-import { access, cp, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { brand, publicOrigin } from '../src/identity.mjs';
 import { content } from '../src/content.mjs';
 import { capabilityImages, equipment, workshop } from '../src/media.mjs';
 import { inquiryLimits } from '../src/assets/inquiry-payload.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
-const brand = 'Machinery100';
+const catalog = JSON.parse(await readFile(new URL('../src/catalog.json', import.meta.url), 'utf8'));
 const locales = Object.keys(content);
 const routes = {
   home: '',
   equipment: 'equipment/',
+  attachments: 'attachments/',
   parts: 'parts/',
   manufacturing: 'manufacturing/',
   delivery: 'delivery/',
   contact: 'contact/'
 };
-const email = process.env.CONTACT_EMAIL?.trim() ?? '';
-const whatsapp = process.env.WHATSAPP_NUMBER?.trim() ?? '';
-const siteUrl = process.env.SITE_URL?.trim() ?? '';
+const email = process.env.CONTACT_EMAIL?.trim() || 'machinery100.china@gmail.com';
+const whatsapp = process.env.WHATSAPP_NUMBER?.trim() || '8618948913729';
+const siteUrl = process.argv.includes('--preview') ? '' : (process.env.SITE_URL?.trim() ?? publicOrigin);
+const facebook = process.env.FACEBOOK_URL?.trim() || '';
+if (facebook) {
+  const url = new URL(facebook);
+  if (url.protocol !== 'https:' || !['facebook.com', 'www.facebook.com', 'm.facebook.com'].includes(url.hostname) ||
+      url.username || url.password || url.pathname === '/') {
+    throw new Error('FACEBOOK_URL must point to an HTTPS Facebook profile or page');
+  }
+}
 
 if (email && !/^[^\s<>@?&]+@[^\s<>@?&]+\.[^\s<>@?&]+$/.test(email)) {
   throw new Error('CONTACT_EMAIL must be a valid public email address');
@@ -44,7 +54,7 @@ const button = (href, label, variant = 'primary') =>
   '<a class="button button--' + variant + '" href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
 
 function wordmark(locale) {
-  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>Machinery<b>100</b></span></a>';
+  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true">CED</span><span>China Equipment<br>Direct</span></a>';
 }
 
 function header(locale, page, t) {
@@ -66,7 +76,17 @@ function footer(locale, t) {
     '<a href="' + pathFor(locale, key) + '">' + t.nav[key] + '</a>'
   ).join('');
   return '<footer class="site-footer"><div class="wrap footer-inner"><div>' + wordmark(locale) +
-    '<p>' + t.brandLine + '</p></div><nav aria-label="' + (locale === 'en' ? 'Footer navigation' : '页脚导航') + '">' + nav + '</nav></div></footer>';
+    '<p>' + t.brandLine + '</p><a class="footer-email" href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div><nav aria-label="' + (locale === 'en' ? 'Footer navigation' : '页脚导航') + '">' + nav + '</nav></div></footer>';
+}
+
+function contactDock(locale) {
+  const label = locale === 'en' ? 'Contact' : '联系';
+  return '<aside class="contact-dock" aria-label="' + label + '">' +
+    '<a class="dock-wa" href="https://wa.me/' + whatsapp + '">WhatsApp</a>' +
+    '<details><summary>' + label + ' <span aria-hidden="true">＋</span></summary><div class="dock-links">' +
+    '<a href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a>' +
+    (facebook ? '<a href="' + escapeHtml(facebook) + '">Facebook</a>' : '') +
+    '<a href="' + contactFor(locale) + '">' + content[locale].request + '</a></div></details></aside>';
 }
 
 function photoGallery(locale, photos) {
@@ -109,23 +129,31 @@ function capabilitySection(locale, topic) {
 }
 
 function home(locale, t) {
-  const tiles = ['equipment', 'parts'].map((key) =>
+  const tiles = Object.keys(catalog).map((key) =>
     '<a class="sourcing-tile" href="' + pathFor(locale, key) + '"><h3>' +
-    t[key].title + '</h3><p>' + t[key].description + '</p><span class="text-link">' + t[key].action + '</span></a>'
+    t[key].title + '</h3><p>' + t[key].description + '</p><span class="text-link">' + (locale === 'en' ? 'Browse categories' : '浏览品类') + ' →</span></a>'
   ).join('');
   const audiences = t.audiences.map((item) =>
     '<article class="buyer-card"><h3>' + item.title + '</h3><p>' + item.detail + '</p>' +
     '<a class="text-link" href="' + contactFor(locale, item.type) + '">' + item.action + '</a></article>'
   ).join('');
+  const results = Object.entries(catalog).flatMap(([type, items]) => items.map((item) =>
+    '<li data-search-name="' + escapeHtml(item.en + ' ' + item['zh-CN']) + '"><a href="' +
+    pathFor(locale, type) + '#' + item.id + '">' + escapeHtml(item[locale]) + '</a></li>'
+  )).join('');
   return '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><h1>' +
-    t.home.headline.map((line) => '<span>' + line + '</span>').join(' ') +
-    '</h1><p>' + t.home.intro + '</p><div class="button-row">' + button(contactFor(locale), t.request) +
-    button('#capabilities', t.capabilities.title, 'outline') +
-    '</div></div><figure class="hero-photo"><img src="' + asset('partner-workshop.webp') +
-    '" srcset="' + asset('partner-workshop-small.webp') + ' 800w, ' + asset('partner-workshop.webp') +
-    ' 1680w" sizes="(max-width: 800px) 100vw, 58vw" width="1680" height="1260" alt="' + t.photoCredit +
-    '" fetchpriority="high"><figcaption>' + t.photoCredit + '</figcaption></figure></div></section>' +
-    '<section class="section wrap sourcing"><h2>' + t.home.sourcing + '</h2><div class="sourcing-grid">' +
+    'China Equipment <span>Direct</span></h1><p>' + t.home.intro + '</p>' +
+    '<div class="catalog-search" data-catalog-search hidden><label for="catalog-query">' + t.home.search + '</label>' +
+    '<input type="search" id="catalog-query" autocomplete="off" maxlength="100" placeholder="' + escapeHtml(t.home.placeholder) + '">' +
+    '<div class="search-results" hidden><ul>' + results + '</ul><p data-no-match>' + t.home.empty +
+    ' <a href="' + contactFor(locale, 'parts') + '">' + t.home.inquire + '</a></p></div></div>' +
+    '<div class="button-row">' + button('#catalog', t.home.sourcing) +
+    button(contactFor(locale), t.request, 'outline') +
+    '</div></div><figure class="hero-photo"><img src="' + asset('mini-excavator.webp') +
+    '" srcset="' + asset('mini-excavator-small.webp') + ' 600w, ' + asset('mini-excavator.webp') +
+    ' 1200w" sizes="(max-width: 800px) 100vw, 50vw" width="1200" height="800" alt="' + t.home.caption +
+    '" fetchpriority="high"><figcaption>' + t.home.caption + '</figcaption></figure></div></section>' +
+    '<section class="section wrap sourcing" id="catalog"><h2>' + t.home.sourcing + '</h2><div class="sourcing-grid">' +
     tiles + '</div></section>' + capabilitySection(locale, t.capabilities) +
     '<section class="factory-band"><div class="wrap factory-band-inner"><img loading="lazy" decoding="async" src="' +
     asset('workshop-machinery.webp') + '" alt="' + t.photoCredit + '"><div><h2>' + t.home.manufacturingTitle +
@@ -138,7 +166,11 @@ function home(locale, t) {
 function sourcing(locale, page, t) {
   const topic = t[page];
   return lead(topic, button(contactFor(locale, page), topic.action)) +
-    checklist(topic.checklistTitle, topic.checklist);
+    '<section class="section wrap category-section"><h2>' + (locale === 'en' ? 'Categories for inquiry' : '可询价品类') +
+    '</h2><ul class="category-list">' + catalog[page].map((item) =>
+      '<li id="' + item.id + '"><a href="' + contactFor(locale, page) + '&amp;item=' + item.id + '">' +
+      escapeHtml(item[locale]) + '<span aria-hidden="true"> ↗</span></a></li>'
+    ).join('') + '</ul></section>' + checklist(topic.checklistTitle, topic.checklist);
 }
 
 function manufacturing(locale, t) {
@@ -200,6 +232,7 @@ function contact(locale, t) {
 const pageRenderers = {
   home,
   equipment: (locale, t) => sourcing(locale, 'equipment', t),
+  attachments: (locale, t) => sourcing(locale, 'attachments', t),
   parts: (locale, t) => sourcing(locale, 'parts', t),
   manufacturing,
   delivery,
@@ -214,9 +247,13 @@ function head(locale, key, t) {
       locales.map((lang) => '<link rel="alternate" hreflang="' + lang + '" href="' + siteUrl + pathFor(lang, key) + '">').join('') +
       '<link rel="alternate" hreflang="x-default" href="' + siteUrl + pathFor('en', key) + '">'
     : '<meta name="robots" content="noindex,nofollow">';
+  const schema = key === 'home' && siteUrl ? '<script type="application/ld+json">' + JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'Organization', '@id': siteUrl + '/#organization',
+    name: brand, url: siteUrl, email, telephone: '+' + whatsapp, ...(facebook ? { sameAs: [facebook] } : {})
+  }).replaceAll('<', '\\u003c') + '</script>' : '';
   return '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>' + escapeHtml(title) + ' | ' + brand + '</title><meta name="description" content="' + escapeHtml(description) + '">' +
-    alternatives + '<link rel="icon" href="/assets/favicon.png"><link rel="stylesheet" href="/assets/site.css">' +
+    alternatives + schema + '<link rel="icon" href="/assets/favicon.png"><link rel="stylesheet" href="/assets/site.css">' +
     '<script src="/assets/site.js" type="module"></script>';
 }
 
@@ -234,15 +271,18 @@ async function render() {
     for (const key of Object.keys(routes)) {
       const directory = join(dist, locale, routes[key]);
       await mkdir(directory, { recursive: true });
+      const lookup = key === 'contact' ? '<script type="application/json" id="inquiry-items">' +
+        JSON.stringify(Object.fromEntries(Object.entries(catalog).flatMap(([type, items]) =>
+          items.map((item) => [item.id, { name: item[locale], type }])))).replaceAll('<', '\\u003c') + '</script>' : '';
       const doc = '<!doctype html><html lang="' + locale + '"><head>' + head(locale, key, t) +
         '</head><body><a class="skip" href="#content">' + t.skip + '</a>' + header(locale, key, t) +
         '<main id="content" tabindex="-1">' + pageRenderers[key](locale, t) +
-        '</main>' + footer(locale, t) + '</body></html>\n';
+        '</main>' + footer(locale, t) + contactDock(locale) + lookup + '</body></html>\n';
       await writeFile(join(directory, 'index.html'), doc);
     }
   }
-  await writeFile(join(dist, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0;url=/en/"><title>Machinery100</title><p><a href="/en/">English</a> · <a lang="zh-CN" href="/zh-CN/">简体中文</a></p></html>\n');
-  await writeFile(join(dist, '404.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/site.css"><title>Page not found | Machinery100</title><main class="section wrap"><h1>' + content.en.notFound + ' / ' + content['zh-CN'].notFound + '</h1><p><a href="/en/">Home</a> · <a lang="zh-CN" href="/zh-CN/">首页</a></p></main></html>\n');
+  await writeFile(join(dist, 'index.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0;url=/en/"><title>China Equipment Direct</title><p><a href="/en/">English</a> · <a lang="zh-CN" href="/zh-CN/">简体中文</a></p></html>\n');
+  await writeFile(join(dist, '404.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/site.css"><title>Page not found | China Equipment Direct</title><main class="section wrap"><h1>' + content.en.notFound + ' / ' + content['zh-CN'].notFound + '</h1><p><a href="/en/">Home</a> · <a lang="zh-CN" href="/zh-CN/">首页</a></p></main></html>\n');
   const robots = siteUrl ? 'User-agent: *\nAllow: /\nSitemap: ' + siteUrl + '/sitemap.xml\n' : 'User-agent: *\nDisallow: /\n';
   await writeFile(join(dist, 'robots.txt'), robots);
   await writeFile(join(dist, 'sitemap.xml'),

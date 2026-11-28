@@ -1,5 +1,7 @@
 import { prepareInquiry } from '../src/assets/inquiry-payload.js';
 
+import { publicOrigin } from '../src/identity.mjs';
+
 const defaultProductionApi = 'https://q.scyllatech.cn/quant';
 const javaSuccess = '保存留言信息成功';
 const acceptedCodes = new Set([0, 200, '0', '200', 'success', 'SUCCESS']);
@@ -53,7 +55,7 @@ export function createInquiryHandler({ production = false, env = process.env } =
   const base = env.API_BASE_URL?.trim() || env.NEXT_PUBLIC_API_BASE_URL?.trim() ||
     (production ? defaultProductionApi : '');
   const endpoint = env.INQUIRY_API_URL?.trim() || (base && base.replace(/\/+$/, '') + '/machiapi/saveInquiry');
-  const siteOrigin = env.SITE_URL?.trim();
+  const siteOrigin = env.SITE_URL?.trim() || (production ? publicOrigin : '');
   const token = env.INQUIRY_API_TOKEN;
 
   if (endpoint) {

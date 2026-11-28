@@ -1,0 +1,373 @@
+{
+  "equipment": [
+    {
+      "id": "M01",
+      "en": "Mini Excavator 0.8–1t",
+      "zh-CN": "0.8–1 t 微型挖掘机"
+    },
+    {
+      "id": "M02",
+      "en": "Mini Excavator 1–2t",
+      "zh-CN": "1–2 t 微型挖掘机"
+    },
+    {
+      "id": "M03",
+      "en": "Mini Excavator 2–3t",
+      "zh-CN": "2–3 t 微型挖掘机"
+    },
+    {
+      "id": "M04",
+      "en": "Mini Excavator 3–5t",
+      "zh-CN": "3–5 t 微型挖掘机"
+    },
+    {
+      "id": "M05",
+      "en": "Compact Excavator 5–8t",
+      "zh-CN": "5–8 t 小型挖掘机"
+    },
+    {
+      "id": "M06",
+      "en": "Skid Steer Loader (Wheeled)",
+      "zh-CN": "轮式滑移装载机"
+    },
+    {
+      "id": "M07",
+      "en": "Skid Steer Loader (Tracked)",
+      "zh-CN": "履带式滑移装载机"
+    },
+    {
+      "id": "M08",
+      "en": "Mini Wheel Loader",
+      "zh-CN": "小型轮式装载机"
+    },
+    {
+      "id": "M09",
+      "en": "Mini Forklift / Rough Terrain Forklift",
+      "zh-CN": "迷你叉车 / 越野叉车"
+    },
+    {
+      "id": "M10",
+      "en": "Walk-behind Roller",
+      "zh-CN": "手扶式压路机"
+    },
+    {
+      "id": "M11",
+      "en": "Ride-on Roller",
+      "zh-CN": "座驾式压路机"
+    }
+  ],
+  "attachments": [
+    {
+      "id": "A01",
+      "en": "Standard Bucket",
+      "zh-CN": "标准挖斗"
+    },
+    {
+      "id": "A02",
+      "en": "Tilting Bucket",
+      "zh-CN": "倾斜斗"
+    },
+    {
+      "id": "A03",
+      "en": "Ditch Cleaning Bucket",
+      "zh-CN": "清理斗 / 泥斗"
+    },
+    {
+      "id": "A04",
+      "en": "Pallet Forks",
+      "zh-CN": "货叉"
+    },
+    {
+      "id": "A05",
+      "en": "Log Grapple",
+      "zh-CN": "抓木器"
+    },
+    {
+      "id": "A06",
+      "en": "Hydraulic Thumb",
+      "zh-CN": "液压拇指夹"
+    },
+    {
+      "id": "A07",
+      "en": "Ripper / Rake",
+      "zh-CN": "松土器 / 耙子"
+    },
+    {
+      "id": "A08",
+      "en": "Hydraulic Breaker",
+      "zh-CN": "液压破碎锤"
+    },
+    {
+      "id": "A09",
+      "en": "Hydraulic Shear",
+      "zh-CN": "液压剪"
+    },
+    {
+      "id": "A10",
+      "en": "Concrete Pulverizer",
+      "zh-CN": "混凝土粉碎钳"
+    },
+    {
+      "id": "A11",
+      "en": "Hydraulic Rotator",
+      "zh-CN": "液压旋转器"
+    },
+    {
+      "id": "A12",
+      "en": "Earth Auger",
+      "zh-CN": "螺旋钻"
+    },
+    {
+      "id": "A13",
+      "en": "Trencher",
+      "zh-CN": "开沟器"
+    },
+    {
+      "id": "A14",
+      "en": "Tree Auger",
+      "zh-CN": "树穴钻"
+    },
+    {
+      "id": "A15",
+      "en": "Angle Broom",
+      "zh-CN": "斜角清扫器 / 扫雪刷"
+    },
+    {
+      "id": "A16",
+      "en": "Snow Blower",
+      "zh-CN": "抛雪机"
+    },
+    {
+      "id": "A17",
+      "en": "Sweeper",
+      "zh-CN": "扫地机"
+    },
+    {
+      "id": "A18",
+      "en": "Flail Mower",
+      "zh-CN": "割草机"
+    },
+    {
+      "id": "A19",
+      "en": "Water Sprayer",
+      "zh-CN": "洒水装置"
+    },
+    {
+      "id": "A20",
+      "en": "Vibratory Compactor",
+      "zh-CN": "振动夯"
+    },
+    {
+      "id": "A21",
+      "en": "Compactor Wheel",
+      "zh-CN": "压实轮"
+    },
+    {
+      "id": "A22",
+      "en": "Dozer Blade",
+      "zh-CN": "推土铲"
+    },
+    {
+      "id": "A23",
+      "en": "Grader / Leveler",
+      "zh-CN": "平整器"
+    },
+    {
+      "id": "A24",
+      "en": "Mechanical Quick Coupler",
+      "zh-CN": "机械快换接头"
+    },
+    {
+      "id": "A25",
+      "en": "Hydraulic Quick Coupler",
+      "zh-CN": "液压快换接头"
+    },
+    {
+      "id": "A26",
+      "en": "Tilt Coupler",
+      "zh-CN": "倾斜快换"
+    },
+    {
+      "id": "A27",
+      "en": "Crusher / Screening Bucket",
+      "zh-CN": "破碎筛分斗"
+    },
+    {
+      "id": "A28",
+      "en": "Rotary Cutter / Milling Drum",
+      "zh-CN": "铣挖机"
+    },
+    {
+      "id": "A29",
+      "en": "Long Boom",
+      "zh-CN": "加长臂"
+    }
+  ],
+  "parts": [
+    {
+      "id": "S01",
+      "en": "Hydraulic Hose Assembly",
+      "zh-CN": "高压软管总成"
+    },
+    {
+      "id": "S02",
+      "en": "Hydraulic Fittings",
+      "zh-CN": "液压管接头"
+    },
+    {
+      "id": "S03",
+      "en": "Seal Kit",
+      "zh-CN": "密封件 / 修理包"
+    },
+    {
+      "id": "S04",
+      "en": "Hydraulic Cylinder",
+      "zh-CN": "液压油缸"
+    },
+    {
+      "id": "S05",
+      "en": "Hydraulic Pump",
+      "zh-CN": "液压泵"
+    },
+    {
+      "id": "S06",
+      "en": "Hydraulic Motor",
+      "zh-CN": "液压马达"
+    },
+    {
+      "id": "S07",
+      "en": "Control Valve",
+      "zh-CN": "多路阀"
+    },
+    {
+      "id": "S08",
+      "en": "Filters",
+      "zh-CN": "滤芯（机油/柴油/空气/液压）"
+    },
+    {
+      "id": "S09",
+      "en": "Belts",
+      "zh-CN": "皮带"
+    },
+    {
+      "id": "S10",
+      "en": "Injector",
+      "zh-CN": "喷油器"
+    },
+    {
+      "id": "S11",
+      "en": "Gasket",
+      "zh-CN": "缸垫"
+    },
+    {
+      "id": "S12",
+      "en": "Water Pump",
+      "zh-CN": "水泵"
+    },
+    {
+      "id": "S13",
+      "en": "Track Shoe / Track Pad",
+      "zh-CN": "履带板"
+    },
+    {
+      "id": "S14",
+      "en": "Track Roller",
+      "zh-CN": "支重轮"
+    },
+    {
+      "id": "S15",
+      "en": "Carrier Roller",
+      "zh-CN": "托链轮"
+    },
+    {
+      "id": "S16",
+      "en": "Idler",
+      "zh-CN": "引导轮"
+    },
+    {
+      "id": "S17",
+      "en": "Sprocket",
+      "zh-CN": "驱动齿"
+    },
+    {
+      "id": "S18",
+      "en": "Track Chain Assembly",
+      "zh-CN": "链轨总成"
+    },
+    {
+      "id": "S19",
+      "en": "Slewing Bearing",
+      "zh-CN": "回转支承"
+    },
+    {
+      "id": "S20",
+      "en": "Slewing Drive",
+      "zh-CN": "回转减速机"
+    },
+    {
+      "id": "S21",
+      "en": "Travel Gearbox",
+      "zh-CN": "行走减速机"
+    },
+    {
+      "id": "S22",
+      "en": "Driveshaft",
+      "zh-CN": "传动轴"
+    },
+    {
+      "id": "S23",
+      "en": "Bucket Teeth",
+      "zh-CN": "斗齿"
+    },
+    {
+      "id": "S24",
+      "en": "Pin & Retainer",
+      "zh-CN": "斗齿销 / 锁销"
+    },
+    {
+      "id": "S25",
+      "en": "Pin & Bushing",
+      "zh-CN": "销轴 / 衬套"
+    },
+    {
+      "id": "S26",
+      "en": "Cutting Edge",
+      "zh-CN": "刃口板 / 刀片"
+    },
+    {
+      "id": "S27",
+      "en": "Wiring Harness",
+      "zh-CN": "线束"
+    },
+    {
+      "id": "S28",
+      "en": "Sensor",
+      "zh-CN": "传感器"
+    },
+    {
+      "id": "S29",
+      "en": "Lamp",
+      "zh-CN": "灯具"
+    },
+    {
+      "id": "S30",
+      "en": "Instrument Panel",
+      "zh-CN": "控制面板 / 仪表"
+    },
+    {
+      "id": "S31",
+      "en": "Breaker Chisel",
+      "zh-CN": "破碎锤钎杆"
+    },
+    {
+      "id": "S32",
+      "en": "Breaker Seal Kit",
+      "zh-CN": "破碎锤密封包"
+    },
+    {
+      "id": "S33",
+      "en": "Accumulator",
+      "zh-CN": "氮气室 / 蓄能器"
+    }
+  ]
+}
