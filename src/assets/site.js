@@ -87,6 +87,20 @@ if (catalogSearch) {
   catalogSearch.hidden = false;
   query.addEventListener('input', filterCategories);
   query.addEventListener('focus', filterCategories);
+  function focusFirstResult() {
+    filterCategories();
+    if (!results.hidden) (results.querySelector('li:not([hidden]) a') ?? inquiryLink).focus();
+  }
+  catalogSearch.addEventListener('submit', (event) => {
+    event.preventDefault();
+    focusFirstResult();
+  });
+  for (const shortcut of catalogSearch.querySelectorAll('[data-search-term]')) {
+    shortcut.addEventListener('click', () => {
+      query.value = shortcut.dataset.searchTerm;
+      focusFirstResult();
+    });
+  }
   function focusFromHeader() {
     if (location.hash === '#catalog-search') query.focus({ preventScroll: true });
   }
@@ -102,7 +116,7 @@ if (catalogSearch) {
     }
     if (event.key === 'ArrowDown' && event.target === query && !results.hidden) {
       event.preventDefault();
-      (results.querySelector('li:not([hidden]) a') ?? inquiryLink).focus();
+      focusFirstResult();
     }
   });
 }

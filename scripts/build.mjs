@@ -154,33 +154,39 @@ function home(locale, t) {
     t[key].title + '</h3><p>' + t[key].description + '</p><span class="text-link">' + (locale === 'en' ? 'Browse categories' : '浏览品类') + ' →</span></a>'
   ).join('');
   const audiences = t.audiences.map((item) =>
-    '<article class="buyer-card"><h3>' + item.title + '</h3><p>' + item.detail + '</p>' +
-    '<a class="text-link" href="' + contactFor(locale, item.type) + '">' + item.action + '</a></article>'
+    '<article class="buyer-card"><h2><a href="' + contactFor(locale, item.type) + '">' + item.action +
+    '</a></h2><p>' + item.detail + '</p></article>'
   ).join('');
   const results = entries.map((item) => '<li data-search-name="' +
     escapeHtml([item.en, item['zh-CN'], item.id, item.partNumber, ...(item.aliases ?? []),
       ...(item.verifiedCrossReferences ?? []), ...(item.models ?? [])].filter(Boolean).join(' ')) + '"><a href="' +
     itemPath(locale, item) + '">' + escapeHtml(item[locale]) + '</a></li>').join('');
-  return '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><h1>' +
-    'China Equipment <span>Direct</span></h1><p>' + t.home.intro + '</p>' +
-    '<div class="catalog-search" id="catalog-search" data-catalog-search hidden><label for="catalog-query">' + t.home.search + '</label>' +
-    '<input type="search" id="catalog-query" autocomplete="off" maxlength="100" placeholder="' + escapeHtml(t.home.placeholder) + '">' +
+  const shortcuts = t.home.searchTerms.map((term) =>
+    '<button type="button" data-search-term="' + escapeHtml(term) + '">' + escapeHtml(term) + '</button>'
+  ).join('');
+  return '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><div class="hero-brand">' + brand +
+    '</div><h1>' + escapeHtml(t.home.headline) + '</h1><p class="hero-intro">' + t.home.intro + '</p>' +
+    '<form class="catalog-search" id="catalog-search" role="search" data-catalog-search hidden>' +
+    '<div class="search-field"><div class="search-bar"><input type="search" id="catalog-query" autocomplete="off" required maxlength="100"' +
+    ' aria-label="' + escapeHtml(t.home.search) + '" placeholder="' + escapeHtml(t.home.placeholder) + '">' +
+    '<button type="submit" class="button button--primary">' + t.home.searchAction + '</button></div>' +
     '<div class="search-results" hidden><ul>' + results + '</ul><p data-no-match>' + t.home.empty +
     ' <a href="' + contactFor(locale, 'parts') + '">' + t.home.inquire + '</a></p></div></div>' +
-    '<div class="button-row">' + button('#catalog', t.home.sourcing) +
-    button(contactFor(locale), t.request, 'outline') +
+    '<div class="search-shortcuts"><span>' + t.home.commonSearches + '</span>' + shortcuts + '</div></form>' +
+    '<div class="hero-links"><a href="#catalog">' + t.home.sourcing + '</a>' +
+    '<a href="' + contactFor(locale) + '">' + t.request + ' →</a>' +
     '</div></div><figure class="hero-photo"><img src="' + asset('mini-excavator.webp') +
     '" srcset="' + asset('mini-excavator-small.webp') + ' 600w, ' + asset('mini-excavator.webp') +
-    ' 1200w" sizes="(max-width: 800px) 100vw, 50vw" width="1200" height="800" alt="' + t.home.caption +
+    ' 1200w" sizes="(max-width: 800px) calc(100vw - 56px), (max-width: 1200px) 46vw, 522px" width="1200" height="800" alt="' + t.home.caption +
     '" fetchpriority="high"><figcaption>' + t.home.caption + '</figcaption></figure></div></section>' +
+    '<section class="buyers" aria-label="' + escapeHtml(t.home.audienceTitle) + '"><div class="wrap buyer-grid">' +
+    audiences + '</div></section>' +
     '<section class="section wrap sourcing" id="catalog"><h2>' + t.home.sourcing + '</h2><div class="sourcing-grid">' +
     tiles + '</div></section>' + capabilitySection(locale, t.capabilities) +
     '<section class="factory-band"><div class="wrap factory-band-inner"><img loading="lazy" decoding="async" src="' +
     asset('workshop-machinery.webp') + '" alt="' + t.photoCredit + '"><div><h2>' + t.home.manufacturingTitle +
     '</h2><p>' + t.home.manufacturingText + '</p>' + button(pathFor(locale, 'manufacturing'), t.factoryLink, 'outline') +
-    '</div></div></section>' +
-    '<section class="section wrap buyers"><h2>' + t.home.audienceTitle + '</h2><div class="buyer-grid">' +
-    audiences + '</div></section>' + callToAction(locale, t);
+    '</div></div></section>' + callToAction(locale, t);
 }
 
 const itemPath = (locale, item) => catalogGuides[item.id]

@@ -28,12 +28,16 @@ export const content = {
     photoCredit: 'On-site photo at a manufacturing partner’s workshop in China',
     home: {
       title: 'Mini excavators, attachments and spare parts from China',
+      headline: 'Compact machines, attachments and spare parts from China',
       search: 'Search the catalog',
+      searchAction: 'Search',
+      commonSearches: 'Common searches',
+      searchTerms: ['Mini excavator 1–2t', 'Breaker', 'Filters', 'Quick coupler'],
       placeholder: 'Try mini excavator, quick coupler or hydraulic pump',
       empty: 'No matching category. Send the model or part number for a fit check.',
       inquire: 'Ask about this item',
       caption: 'Mini excavator · equipment illustration',
-      intro: 'Source mini and compact machines from factories and suppliers in China. Match attachments to small, medium and large machines, or request spare parts by model or part number.',
+      intro: 'Share your machine model, attachment interface or spare part number. We check fit and availability with suppliers in China, including attachments for small, medium and large machines.',
       sourcing: 'Browse the sourcing catalog',
       manufacturingTitle: 'Inside our manufacturing partners’ workshops',
       manufacturingText: 'See workshop floors and production equipment. For an individual order, ask us to confirm which processes and inspection records apply.',
@@ -100,9 +104,9 @@ export const content = {
       action: 'Ask about a part'
     },
     audiences: [
-      { type: 'dealer', title: 'Dealers & distributors', detail: 'Share product categories, expected volumes and the market you supply.', action: 'Dealer & bulk inquiries' },
-      { type: 'parts', title: 'Repair & parts buyers', detail: 'Send a part number, machine model or the details on a nameplate.', action: 'Find replacement parts' },
-      { type: 'project', title: 'Engineering contractors', detail: 'Tell us the application, configuration and delivery schedule for your project.', action: 'Project equipment inquiries' }
+      { type: 'dealer', detail: 'Share product categories, expected volumes and the market you supply.', action: 'Dealer & bulk inquiries' },
+      { type: 'parts', detail: 'Send a part number, machine model or the details on a nameplate.', action: 'Find replacement parts' },
+      { type: 'project', detail: 'Tell us the application, configuration and delivery schedule for your project.', action: 'Project equipment inquiries' }
     ],
     manufacturing: {
       title: 'Manufacturing partners in China',
@@ -204,12 +208,16 @@ export const content = {
     photoCredit: '中国合作工厂车间实拍',
     home: {
       title: '小微工程机械、大中小型主机属具与配件采购',
+      headline: '小微工程机械、属具与配件采购',
       search: '搜索采购目录',
+      searchAction: '搜索',
+      commonSearches: '常用搜索',
+      searchTerms: ['1–2 t 微型挖掘机', '破碎锤', '滤芯', '快换接头'],
       placeholder: '试试微型挖掘机、快换接头或液压泵',
       empty: '目录暂无匹配类别，可提交机型或件号，由我们核对。',
       inquire: '询问此产品',
       caption: '微型挖掘机 · 机型示意图',
-      intro: '对接中国源头工厂与供应商，采购小微工程机械。属具覆盖大、中、小型主机，可按机型与接口核对；维修配件可凭机型或件号询价。',
+      intro: '提供整机型号、属具接口或配件件号，我们会与中国工厂和供应商核对适配和供货情况。属具询价覆盖大、中、小型主机。',
       sourcing: '浏览采购目录',
       manufacturingTitle: '走进合作工厂',
       manufacturingText: '查看现场车间和生产设备。您可以按订单要求核对适用的生产工序及检验资料。',
@@ -276,9 +284,9 @@ export const content = {
       action: '提交配件需求'
     },
     audiences: [
-      { type: 'dealer', title: '经销商', detail: '提供采购品类、预计数量和销售市场。', action: '经销与批量采购' },
-      { type: 'parts', title: '维修及配件采购商', detail: '提供件号、设备型号或铭牌信息。', action: '维修配件匹配' },
-      { type: 'project', title: '工程承包商', detail: '说明项目工况、设备配置和交付时间。', action: '工程项目采购' }
+      { type: 'dealer', detail: '提供采购品类、预计数量和销售市场。', action: '经销与批量采购' },
+      { type: 'parts', detail: '提供件号、设备型号或铭牌信息。', action: '维修配件匹配' },
+      { type: 'project', detail: '说明项目工况、设备配置和交付时间。', action: '工程项目采购' }
     ],
     manufacturing: {
       title: '中国制造合作工厂',
