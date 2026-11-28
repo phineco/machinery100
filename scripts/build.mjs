@@ -2,6 +2,7 @@ import { access, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promise
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { brand, publicOrigin } from '../src/identity.mjs';
+import { catalogGuides } from '../src/catalog-guides.mjs';
 import { content } from '../src/content.mjs';
 import { capabilityImages, equipment, workshop } from '../src/media.mjs';
 import { inquiryLimits } from '../src/assets/inquiry-payload.js';
@@ -9,6 +10,14 @@ import { inquiryLimits } from '../src/assets/inquiry-payload.js';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
 const catalog = JSON.parse(await readFile(new URL('../src/catalog.json', import.meta.url), 'utf8'));
+const groups = JSON.parse(await readFile(new URL('../src/catalog-groups.json', import.meta.url), 'utf8'));
+const entries = Object.entries(catalog).flatMap(([type, items]) => items.map((item) => ({ ...item, type })));
+const itemsById = new Map(entries.map((item) => [item.id, item]));
+if (itemsById.size !== entries.length || entries.some((item) =>
+  !/^[MAS]\d{2}$/.test(item.id) || !item.en?.trim() || !item['zh-CN']?.trim() || !groups[item.group])) {
+  throw new Error('Catalog entries must have unique IDs, bilingual names and a valid group');
+}
+
 const locales = Object.keys(content);
 const routes = {
   home: '',
@@ -20,8 +29,16 @@ const routes = {
   contact: 'contact/'
 };
 const email = process.env.CONTACT_EMAIL?.trim() || 'machinery100.china@gmail.com';
-const whatsapp = process.env.WHATSAPP_NUMBER?.trim() || '8618948913729';
+const whatsapp = process.env.WHATSAPP_NUMBER?.trim() || '8618949813729';
 const siteUrl = process.argv.includes('--preview') ? '' : (process.env.SITE_URL?.trim() ?? publicOrigin);
+for (const [id, guide] of Object.entries(catalogGuides)) {
+  const item = itemsById.get(id);
+  if (!item || guide.related.some((related) => !itemsById.has(related))) {
+    throw new Error('Unknown catalog guide reference: ' + id);
+  }
+  routes[id] = routes[item.type] + guide.slug + '/';
+}
+const navPages = ['equipment', 'attachments', 'parts', 'manufacturing', 'delivery', 'contact'];
 const facebook = process.env.FACEBOOK_URL?.trim() || '';
 if (facebook) {
   const url = new URL(facebook);
@@ -54,29 +71,33 @@ const button = (href, label, variant = 'primary') =>
   '<a class="button button--' + variant + '" href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
 
 function wordmark(locale) {
-  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true">CED</span><span>China Equipment<br>Direct</span></a>';
+  return '<a class="wordmark" href="' + pathFor(locale) + '"><span class="brand-icon" aria-hidden="true">CED</span><span class="brand-name">China Equipment Direct<small>' + content[locale].brandLine + '</small></span></a>';
 }
 
 function header(locale, page, t) {
   const other = locale === 'en' ? 'zh-CN' : 'en';
-  const navLinks = Object.keys(routes).slice(1).map((key) =>
-    '<a href="' + pathFor(locale, key) + '"' + (page === key ? ' aria-current="page"' : '') + '>' + t.nav[key] + '</a>'
+  const navLinks = navPages.map((key) =>
+    '<a href="' + pathFor(locale, key) + '"' + (page === key ? ' aria-current="page"' : itemsById.get(page)?.type === key ? ' data-current' : '') + '>' + t.nav[key] + '</a>'
   ).join('');
-  return '<header class="site-header"><div class="wrap header-inner">' +
+  return '<header class="site-header"><div class="utility-bar"><div class="wrap utility-inner"><span>' + t.brandLine +
+    '</span><a href="https://wa.me/' + whatsapp + '">WhatsApp <span>+' + whatsapp + '</span></a>' +
+    '<a href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div></div><div class="wrap header-inner">' +
     wordmark(locale) +
     '<button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" hidden>' + t.menu + '</button>' +
     '<nav class="site-nav" id="site-nav" aria-label="' + (locale === 'en' ? 'Main navigation' : '主导航') + '">' + navLinks + '</nav>' +
     '<div class="header-actions"><a class="language-link" data-language-switch href="' + pathFor(other, page) + '" lang="' + other + '" hreflang="' + other + '">' + content[other].language + '</a>' +
-    button(contactFor(locale), t.request) +
+    '<a class="header-search" href="' + pathFor(locale) + '#catalog-search">' +
+    (locale === 'en' ? 'Search' : '搜索') + '</a><a class="header-list" href="' + pathFor(locale, 'contact') + '#quote-list">' +
+    t.purchase.list + '<span data-quote-count></span></a>' + button(contactFor(locale), t.request) +
     '</div></div></header>';
 }
 
 function footer(locale, t) {
-  const nav = Object.keys(routes).slice(1).map((key) =>
+  const nav = navPages.map((key) =>
     '<a href="' + pathFor(locale, key) + '">' + t.nav[key] + '</a>'
   ).join('');
   return '<footer class="site-footer"><div class="wrap footer-inner"><div>' + wordmark(locale) +
-    '<p>' + t.brandLine + '</p><a class="footer-email" href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div><nav aria-label="' + (locale === 'en' ? 'Footer navigation' : '页脚导航') + '">' + nav + '</nav></div></footer>';
+    '<br><a class="footer-email" href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div><nav aria-label="' + (locale === 'en' ? 'Footer navigation' : '页脚导航') + '">' + nav + '</nav></div></footer>';
 }
 
 function contactDock(locale) {
@@ -137,13 +158,13 @@ function home(locale, t) {
     '<article class="buyer-card"><h3>' + item.title + '</h3><p>' + item.detail + '</p>' +
     '<a class="text-link" href="' + contactFor(locale, item.type) + '">' + item.action + '</a></article>'
   ).join('');
-  const results = Object.entries(catalog).flatMap(([type, items]) => items.map((item) =>
-    '<li data-search-name="' + escapeHtml(item.en + ' ' + item['zh-CN']) + '"><a href="' +
-    pathFor(locale, type) + '#' + item.id + '">' + escapeHtml(item[locale]) + '</a></li>'
-  )).join('');
+  const results = entries.map((item) => '<li data-search-name="' +
+    escapeHtml([item.en, item['zh-CN'], item.id, item.partNumber, ...(item.aliases ?? []),
+      ...(item.verifiedCrossReferences ?? []), ...(item.models ?? [])].filter(Boolean).join(' ')) + '"><a href="' +
+    itemPath(locale, item) + '">' + escapeHtml(item[locale]) + '</a></li>').join('');
   return '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy"><h1>' +
     'China Equipment <span>Direct</span></h1><p>' + t.home.intro + '</p>' +
-    '<div class="catalog-search" data-catalog-search hidden><label for="catalog-query">' + t.home.search + '</label>' +
+    '<div class="catalog-search" id="catalog-search" data-catalog-search hidden><label for="catalog-query">' + t.home.search + '</label>' +
     '<input type="search" id="catalog-query" autocomplete="off" maxlength="100" placeholder="' + escapeHtml(t.home.placeholder) + '">' +
     '<div class="search-results" hidden><ul>' + results + '</ul><p data-no-match>' + t.home.empty +
     ' <a href="' + contactFor(locale, 'parts') + '">' + t.home.inquire + '</a></p></div></div>' +
@@ -163,14 +184,73 @@ function home(locale, t) {
     audiences + '</div></section>' + callToAction(locale, t);
 }
 
+const itemPath = (locale, item) => catalogGuides[item.id]
+  ? pathFor(locale, item.id)
+  : pathFor(locale, item.type) + '#' + item.id;
+const quotePath = (locale, item) => contactFor(locale, item.type) + '&item=' + item.id;
+
+function breadcrumb(locale, type, current = '') {
+  const t = content[locale];
+  const section = current ? '<a href="' + pathFor(locale, type) + '">' + t.nav[type] + '</a>' : t.nav[type];
+  return '<nav class="breadcrumb" aria-label="' + (locale === 'en' ? 'Breadcrumb' : '当前位置') + '">' +
+    '<a href="' + pathFor(locale) + '">' + t.nav.home + '</a><span aria-hidden="true"> / </span>' + section +
+    (current ? '<span aria-hidden="true"> / </span>' + escapeHtml(current) : '') + '</nav>';
+}
+
+function itemActions(locale, item) {
+  const t = content[locale];
+  return '<div class="button-row">' + button(quotePath(locale, item), t.request, 'outline') +
+    '<button type="button" class="button button--outline" data-add-quote="' + item.id + '" hidden>' +
+    t.purchase.add + '</button></div>';
+}
+
 function sourcing(locale, page, t) {
   const topic = t[page];
-  return lead(topic, button(contactFor(locale, page), topic.action)) +
-    '<section class="section wrap category-section"><h2>' + (locale === 'en' ? 'Categories for inquiry' : '可询价品类') +
-    '</h2><ul class="category-list">' + catalog[page].map((item) =>
-      '<li id="' + item.id + '"><a href="' + contactFor(locale, page) + '&amp;item=' + item.id + '">' +
-      escapeHtml(item[locale]) + '<span aria-hidden="true"> ↗</span></a></li>'
-    ).join('') + '</ul></section>' + checklist(topic.checklistTitle, topic.checklist);
+  const items = entries.filter((item) => item.type === page);
+  const filter = (name, values, label) => '<label>' + label + '<select name="' + name + '"><option value="">' +
+    t.purchase.all + '</option>' + Object.entries(values).map(([value, text]) =>
+      '<option value="' + value + '">' + escapeHtml(text) + '</option>').join('') + '</select></label>';
+  const groupOptions = Object.fromEntries([...new Set(items.map((item) => item.group))].map((key) => [key, groups[key][locale]]));
+  const filters = filter('group', groupOptions, t.purchase.category) + (page === 'equipment'
+    ? filter('travel', t.purchase.travelLabels, t.purchase.travel) +
+      filter('weightBand', Object.fromEntries(items.filter((item) => item.weightBand).map((item) =>
+        [item.weightBand, item.weightBand + ' t'])), t.purchase.weight)
+    : '');
+  const cards = items.map((item) => {
+    const guide = catalogGuides[item.id];
+    const category = groups[item.group][locale];
+    const photo = guide?.image ? '<img class="category-image" src="' + asset(guide.image) +
+      '" width="600" height="400" loading="lazy" alt="' + escapeHtml(t.home.caption) + '">' : '';
+    return '<li id="' + item.id + '" data-group="' + item.group + '" data-travel="' + (item.travel ?? '') +
+      '" data-weight-band="' + (item.weightBand ?? '') + '">' + photo + '<div class="category-card">' +
+      '<p>' + escapeHtml(category) + '</p><h2>' + escapeHtml(item[locale]) + '</h2>' +
+      (item.travel ? '<p>' + t.purchase.travelLabels[item.travel] + (item.weightBand ? ' · ' + item.weightBand + ' t' : '') + '</p>' : '') +
+      (guide ? '<a class="text-link" href="' + itemPath(locale, item) + '">' + t.purchase.details + ' →</a>' : '') +
+      itemActions(locale, item) + '</div></li>';
+  }).join('');
+  return '<section class="section wrap catalog-page">' + breadcrumb(locale, page) +
+    '<h1>' + topic.title + '</h1><p class="catalog-intro">' + topic.description + '</p>' +
+    '<form class="catalog-filters" data-filters hidden>' + filters + '<output aria-live="polite">' +
+    items.length + ' / ' + items.length + '</output></form><ul class="category-list">' + cards + '</ul>' +
+    '<p class="filter-empty" data-filter-empty hidden>' + t.purchase.noResults + '</p></section>' +
+    checklist(topic.checklistTitle, topic.checklist);
+}
+
+function guidePage(locale, item, t) {
+  const guide = catalogGuides[item.id];
+  const [intro, ...facts] = guide[locale];
+  const photo = guide.image ? '<figure><img src="' + asset(guide.image) + '" width="600" height="400" alt="' +
+    t.home.caption + '"><figcaption>' + t.home.caption + '</figcaption></figure>' : '';
+  return '<section class="section wrap catalog-page">' + breadcrumb(locale, item.type, item[locale]) +
+    '<div class="guide-layout"><div><h1>' + escapeHtml(item[locale]) + '</h1><p class="catalog-intro">' + intro +
+    '</p><dl>' + facts.map(([label, value]) => '<div><dt>' + escapeHtml(label) + '</dt><dd>' +
+      escapeHtml(value) + '</dd></div>').join('') + '</dl>' + itemActions(locale, item) + '</div>' + photo +
+    '</div><div class="guide-related"><h2>' + t.purchase.related + '</h2><ul class="category-list">' +
+    guide.related.map((id) => {
+      const related = itemsById.get(id);
+      return '<li><div class="category-card"><a class="text-link" href="' + itemPath(locale, related) + '">' +
+        escapeHtml(related[locale]) + '</a>' + itemActions(locale, related) + '</div></li>';
+    }).join('') + '</ul></div></section>';
 }
 
 function manufacturing(locale, t) {
@@ -199,7 +279,8 @@ function contact(locale, t) {
   const c = t.contact;
   const options = Object.entries(c.types).map(([key, label]) => '<option value="' + key + '">' + label + '</option>').join('');
   const hints = Object.entries(c.hints).map(([key, text]) => ' data-hint-' + key + '="' + escapeHtml(text) + '"').join('');
-  const messages = Object.entries(c.messages).map(([key, text]) => ' data-' + key + '="' + escapeHtml(text) + '"').join('');
+  const messages = Object.entries({ ...c.messages, invalidFiles: t.purchase.invalidFiles,
+    storageError: t.purchase.storageError, pending: t.purchase.pending, received: t.purchase.received }).map(([key, text]) => ' data-' + key + '="' + escapeHtml(text) + '"').join('');
   const field = (key, type, autocomplete, required = true) =>
     '<label>' + c.labels[key] + '<input name="' + key + '" type="' + type + '" autocomplete="' + autocomplete +
     '" maxlength="' + inquiryLimits[key] + '"' + (required ? ' required' : '') + '></label>';
@@ -216,6 +297,12 @@ function contact(locale, t) {
     options + '</select></label></div>' +
     '<label>' + c.labels.requirements + '<textarea name="requirements" required maxlength="' +
     inquiryLimits.message + '" rows="5" aria-describedby="inquiry-hint inquiry-budget"></textarea></label>' +
+    '<section id="quote-list" class="quote-list" hidden><h3>' + t.purchase.list + '</h3><p data-quote-empty>' +
+    t.purchase.empty + '</p><div data-quote-lines data-remove="' + t.purchase.remove + '" data-quantity="' +
+    t.purchase.quantity + '"></div></section>' +
+    '<label data-inquiry-files hidden>' + t.purchase.files + '<input type="file" name="files" multiple ' +
+    'accept=".jpg,.jpeg,.png,.webp,.xlsx,.xls,.csv" aria-describedby="file-hint"></label>' +
+    '<p class="form-hint" id="file-hint" hidden>' + t.purchase.fileHint + '</p>' +
     '<p class="form-hint" id="inquiry-hint"' + hints + '>' + c.hints.default + '</p>' +
     '<p class="form-hint" id="inquiry-budget">' + c.budget + ' <span data-budget></span></p>' +
     '<label hidden>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label>' +
@@ -240,8 +327,9 @@ const pageRenderers = {
 };
 
 function head(locale, key, t) {
-  const title = t[key].title;
-  const description = key === 'home' ? t.home.intro : t[key].description;
+  const item = itemsById.get(key);
+  const title = item?.[locale] ?? t[key].title;
+  const description = item ? catalogGuides[key][locale][0] : key === 'home' ? t.home.intro : t[key].description;
   const alternatives = siteUrl
     ? '<link rel="canonical" href="' + siteUrl + pathFor(locale, key) + '">' +
       locales.map((lang) => '<link rel="alternate" hreflang="' + lang + '" href="' + siteUrl + pathFor(lang, key) + '">').join('') +
@@ -271,12 +359,12 @@ async function render() {
     for (const key of Object.keys(routes)) {
       const directory = join(dist, locale, routes[key]);
       await mkdir(directory, { recursive: true });
-      const lookup = key === 'contact' ? '<script type="application/json" id="inquiry-items">' +
-        JSON.stringify(Object.fromEntries(Object.entries(catalog).flatMap(([type, items]) =>
-          items.map((item) => [item.id, { name: item[locale], type }])))).replaceAll('<', '\\u003c') + '</script>' : '';
+      const lookup = '<script type="application/json" id="inquiry-items">' +
+        JSON.stringify(Object.fromEntries(entries.map((item) => [item.id, { name: item[locale], type: item.type }])))
+          .replaceAll('<', '\\u003c') + '</script>';
       const doc = '<!doctype html><html lang="' + locale + '"><head>' + head(locale, key, t) +
         '</head><body><a class="skip" href="#content">' + t.skip + '</a>' + header(locale, key, t) +
-        '<main id="content" tabindex="-1">' + pageRenderers[key](locale, t) +
+        '<main id="content" tabindex="-1">' + (pageRenderers[key]?.(locale, t) ?? guidePage(locale, itemsById.get(key), t)) +
         '</main>' + footer(locale, t) + contactDock(locale) + lookup + '</body></html>\n';
       await writeFile(join(directory, 'index.html'), doc);
     }

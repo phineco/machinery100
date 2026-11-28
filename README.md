@@ -38,7 +38,7 @@ npm run build
 | --- | --- |
 | `SITE_URL` | 正式 HTTPS 站点来源，默认 `https://www.machinery100.com`，用于双语 canonical、hreflang 和 sitemap。 |
 | `CONTACT_EMAIL` | 公开联系邮箱，默认 `machinery100.china@gmail.com`。 |
-| `WHATSAPP_NUMBER` | 公开号码，含国家区号且仅数字，默认 `8618948913729`。 |
+| `WHATSAPP_NUMBER` | 公开号码，含国家区号且仅数字，默认 `8618949813729`。 |
 | `FACEBOOK_URL` | 官方 Facebook 主页的 HTTPS 链接，配置并构建后出现在全站悬浮联系菜单。 |
 
 `npm run dev` 构建禁止索引的本地预览。生产发布时执行 `npm run build`，然后可在已验证的 Google Search Console 站点资源提交 `/sitemap.xml`。
@@ -57,3 +57,12 @@ location = /api/inquiries {
 ```
 
 Java 侧接收 `name`、`email`、`phoneNumber`、`message`、`productId`。合并留言包含 `[Machinery100]`、目的地、采购类型和语言，采购类型采用站内分类，`productId` 留空。姓名、邮箱和电话限制为 64 字符，包含来源及采购上下文的完整留言限制为 1024 字符。
+
+
+## 询价单及附件
+
+设置 Node 进程的 `INQUIRY_DATA_DIR` 为持久的绝对路径，例如 `/var/lib/machinery100/inquiries`，并给运行账号写入权限。该目录应独立于代码发布目录和 Nginx 的公开站点目录。宝塔反代将 `client_max_body_size 11m;` 配置到询盘接口所在的 location。站内允许最多 3 个文件，单个 5 MB，合计 10 MB。
+
+带清单或附件的询盘保存为 `CED-<编号>/inquiry.json` 和原文件，同一编号的重试复用记录。销售从私有目录按编号核对原始需求。Java 收到询盘编号、条数和摘要，`notification.txt` 记录通知结果。结果待确认或缺失时，销售可凭编号从私有目录跟进。纯文字询盘继续走既有 Java 提交流程。
+
+报价时可使用 [销售报价表](ops/quotation-template.csv)。每次更新保留原询盘号并递增报价版本。正式报价应逐项复核适配、数量、币种、贸易条件、交期与有效期。

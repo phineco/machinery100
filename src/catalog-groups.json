@@ -1,0 +1,82 @@
+{
+  "mini-excavators": {
+    "en": "Mini excavators",
+    "zh-CN": "微型挖掘机"
+  },
+  "compact-excavators": {
+    "en": "Compact excavators",
+    "zh-CN": "小型挖掘机"
+  },
+  "skid-steers": {
+    "en": "Skid steers",
+    "zh-CN": "滑移装载机"
+  },
+  "wheel-loaders": {
+    "en": "Wheel loaders",
+    "zh-CN": "小型轮式装载机"
+  },
+  "forklifts": {
+    "en": "Forklifts",
+    "zh-CN": "迷你叉车"
+  },
+  "rollers": {
+    "en": "Rollers",
+    "zh-CN": "小型压路机"
+  },
+  "digging": {
+    "en": "Digging & loading",
+    "zh-CN": "挖掘与装载"
+  },
+  "breaking": {
+    "en": "Breaking & demolition",
+    "zh-CN": "破碎与拆除"
+  },
+  "drilling": {
+    "en": "Drilling & trenching",
+    "zh-CN": "钻孔与开沟"
+  },
+  "maintenance": {
+    "en": "Sweeping & maintenance",
+    "zh-CN": "清理与养护"
+  },
+  "compaction": {
+    "en": "Grading & compaction",
+    "zh-CN": "平整与压实"
+  },
+  "coupling": {
+    "en": "Couplers & mounts",
+    "zh-CN": "快换与连接"
+  },
+  "specialty": {
+    "en": "Specialty attachments",
+    "zh-CN": "专用属具"
+  },
+  "hydraulics": {
+    "en": "Hydraulics",
+    "zh-CN": "液压系统"
+  },
+  "engine": {
+    "en": "Engine & filters",
+    "zh-CN": "发动机系统"
+  },
+  "undercarriage": {
+    "en": "Undercarriage",
+    "zh-CN": "底盘行走"
+  },
+  "drive": {
+    "en": "Drive & swing",
+    "zh-CN": "传动与回转"
+  },
+  "wear": {
+    "en": "Wear parts",
+    "zh-CN": "易损件"
+  },
+  "electrical": {
+    "en": "Electrical & controls",
+    "zh-CN": "电器与仪表"
+  },
+  "tool-parts": {
+    "en": "Attachment parts",
+    "zh-CN": "属具专用件"
+  }
+}

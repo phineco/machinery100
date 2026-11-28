@@ -1,3 +1,6 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { prepareArchive, saveArchive, privateInquiryDirectory, uploadLimit } from './inquiry-archive.mjs';
 import { prepareInquiry } from '../src/assets/inquiry-payload.js';
 
 import { publicOrigin } from '../src/identity.mjs';
@@ -38,17 +41,17 @@ function json(response, status, body, headers = {}) {
   response.end(JSON.stringify(body));
 }
 
-async function readBody(request) {
-  if (Number(request.headers['content-length']) > requestLimit) return tooLarge;
+async function readBody(request, limit = requestLimit) {
+  if (Number(request.headers['content-length']) > limit) return tooLarge;
 
   const chunks = [];
   let bytes = 0;
   for await (const chunk of request.iterator({ destroyOnReturn: false })) {
     bytes += chunk.length;
-    if (bytes > requestLimit) return tooLarge;
+    if (bytes > limit) return tooLarge;
     chunks.push(chunk);
   }
-  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  return Buffer.concat(chunks);
 }
 
 export function createInquiryHandler({ production = false, env = process.env } = {}) {
@@ -58,6 +61,7 @@ export function createInquiryHandler({ production = false, env = process.env } =
   const siteOrigin = env.SITE_URL?.trim() || (production ? publicOrigin : '');
   const token = env.INQUIRY_API_TOKEN;
 
+  let directory;
   if (endpoint) {
     const url = new URL(endpoint);
     if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) {
@@ -65,28 +69,8 @@ export function createInquiryHandler({ production = false, env = process.env } =
     }
   }
 
-  return async function inquiryHandler(request, response) {
-    if (request.method !== 'POST') return json(response, 405, { error: 'method' }, { Allow: 'POST' });
-    const origin = request.headers.origin;
-    if (origin && origin !== (siteOrigin || 'http://' + request.headers.host)) {
-      return json(response, 403, { error: 'origin' });
-    }
-    if (request.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
-      return json(response, 415, { error: 'content_type' });
-    }
-
-    let data;
-    try {
-      data = await readBody(request);
-    } catch {
-      return json(response, 400, { error: 'invalid_json' });
-    }
-
-    if (data === tooLarge) return json(response, 413, { error: 'too_large' }, { Connection: 'close' });
-    const { payload, error } = prepareInquiry(data);
-    if (error) return json(response, 400, { error });
-    if (!endpoint) return json(response, 503, { error: 'unconfigured' });
-
+  async function notify(payload) {
+    if (!endpoint) return 'unconfigured';
     try {
       const upstream = await fetch(endpoint, {
         method: 'POST',
@@ -100,20 +84,80 @@ export function createInquiryHandler({ production = false, env = process.env } =
       });
       if (!upstream.ok) {
         await upstream.body?.cancel();
-        return json(response, 502, { error: 'delivery_failed' });
+        return 'delivery_failed';
       }
 
       const body = await upstream.text();
       const emptyHtml = !body.trim() && upstream.headers.get('content-type')?.includes('text/html');
       if (emptyHtml || !acknowledged(body)) {
         console.warn('[inquiries] unconfirmed response from Java', upstream.status);
-        return json(response, 502, { error: 'unconfirmed' });
+        return 'unconfirmed';
       }
-      return json(response, 201, { success: true, delivery: 'submitted' });
+      return 'submitted';
     } catch {
       // A connection drop or timeout can occur after Java accepted the request.
       console.warn('[inquiries] Java did not return an acknowledgement');
-      return json(response, 502, { error: 'unconfirmed' });
+      return 'unconfirmed';
     }
+  }
+
+  async function archiveInquiry(response, body, contentType) {
+    try {
+      directory ??= privateInquiryDirectory(env.INQUIRY_DATA_DIR?.trim());
+      const privateDirectory = await directory;
+      if (!privateDirectory) return json(response, 503, { error: 'storage_unavailable' });
+      const archive = await prepareArchive(body, contentType);
+      if (archive.error) return json(response, 400, { error: archive.error });
+      const stored = await saveArchive(privateDirectory, archive);
+      if (stored.conflict) return json(response, 409, { error: 'submission_conflict' });
+
+      const notification = join(stored.destination, 'notification.txt');
+      let delivery = 'pending';
+      if (stored.created) {
+        delivery = await notify(archive.payload);
+        await writeFile(notification, delivery + '\n', { mode: 0o600 }).catch(() => {
+          console.warn('[inquiries] Could not save notification status for', archive.reference);
+        });
+      } else {
+        delivery = (await readFile(notification, 'utf8').catch(() => 'pending')).trim();
+      }
+      return json(response, 201, {
+        success: true, reference: archive.reference, delivery: delivery === 'submitted' ? 'submitted' : 'saved'
+      });
+    } catch (error) {
+      directory = undefined;
+      console.warn('[inquiries] Could not save inquiry archive:', error.code ?? error.name);
+      return json(response, 503, { error: 'storage_unavailable' });
+    }
+  }
+
+  return async function inquiryHandler(request, response) {
+    if (request.method !== 'POST') return json(response, 405, { error: 'method' }, { Allow: 'POST' });
+    const origin = request.headers.origin;
+    if (origin && origin !== (siteOrigin || 'http://' + request.headers.host)) {
+      return json(response, 403, { error: 'origin' });
+    }
+    const contentType = request.headers['content-type'] ?? '';
+    const mime = contentType.split(';')[0].trim().toLowerCase();
+    const multipart = mime === 'multipart/form-data';
+    if (!multipart && mime !== 'application/json') return json(response, 415, { error: 'content_type' });
+    if (multipart && !env.INQUIRY_DATA_DIR?.trim()) return json(response, 503, { error: 'storage_unavailable' });
+
+    let body, data;
+    try {
+      body = await readBody(request, multipart ? uploadLimit : requestLimit);
+      if (!multipart && body !== tooLarge) data = JSON.parse(body.toString('utf8'));
+    } catch {
+      return json(response, 400, { error: multipart ? 'invalid_body' : 'invalid_json' });
+    }
+    if (body === tooLarge) return json(response, 413, { error: 'too_large' }, { Connection: 'close' });
+    if (multipart) return archiveInquiry(response, body, contentType);
+
+    const { payload, error } = prepareInquiry(data);
+    if (error) return json(response, 400, { error });
+    const delivery = await notify(payload);
+    if (delivery === 'unconfigured') return json(response, 503, { error: delivery });
+    if (delivery !== 'submitted') return json(response, 502, { error: delivery });
+    return json(response, 201, { success: true, delivery });
   };
 }

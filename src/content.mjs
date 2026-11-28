@@ -1,6 +1,17 @@
 export const content = {
   en: {
     language: 'English',
+    purchase: {
+      add: 'Add to inquiry', list: 'Inquiry list', remove: 'Remove', empty: 'Your inquiry list is empty.',
+      quantity: 'Quantity', files: 'Photos or purchase list',
+      fileHint: 'JPG, PNG, WebP, Excel or CSV. Up to 3 files, 5 MB each and 10 MB total.',
+      invalidFiles: 'Check the file type, count and size.', storageError: 'We could not save this inquiry. Please retry or email the files.',
+      received: 'Inquiry reference: ', pending: 'Your inquiry was saved. Keep this reference for follow-up.',
+      all: 'All', category: 'Category', weight: 'Excavator weight class', travel: 'Travel',
+      travelLabels: { tracked: 'Tracked', wheeled: 'Wheeled', 'walk-behind': 'Walk-behind' },
+      noResults: 'No categories match these filters. Choose All to clear a filter.',
+      details: 'Selection guide', related: 'Related categories'
+    },
     skip: 'Skip to content',
     menu: 'Menu',
     brandLine: 'Compact machines, attachments and spare parts',
@@ -167,6 +178,17 @@ export const content = {
   },
   'zh-CN': {
     language: '简体中文',
+    purchase: {
+      add: '加入询价单', list: '询价单', remove: '移除', empty: '询价单目前为空。',
+      quantity: '数量', files: '照片或采购清单',
+      fileHint: '支持 JPG、PNG、WebP、Excel 或 CSV。最多 3 个文件，单个不超过 5 MB，合计不超过 10 MB。',
+      invalidFiles: '请检查文件格式、数量和大小。', storageError: '询盘暂未保存，请重试或通过邮件发送文件。',
+      received: '询盘编号：', pending: '询盘已保存，请保留编号以便跟进。',
+      all: '全部', category: '品类', weight: '挖掘机吨位', travel: '行走方式',
+      travelLabels: { tracked: '履带式', wheeled: '轮式', 'walk-behind': '手扶式' },
+      noResults: '没有符合条件的品类。可选择「全部」清除对应筛选。',
+      details: '选型说明', related: '相关品类'
+    },
     skip: '跳到正文',
     menu: '菜单',
     brandLine: '小微工程机械、属具与配件采购',

@@ -26,6 +26,65 @@ if (menu && nav) {
   });
 }
 
+const filters = document.querySelector('[data-filters]');
+if (filters) {
+  const categories = [...document.querySelectorAll('.category-list > li')];
+  const fields = [...filters.querySelectorAll('select')];
+  const feedback = filters.querySelector('output');
+  const empty = document.querySelector('[data-filter-empty]');
+  filters.hidden = false;
+  filters.addEventListener('change', () => {
+    for (const card of categories) {
+      card.hidden = !fields.every((field) => !field.value || card.dataset[field.name] === field.value);
+    }
+    const visible = categories.filter((card) => !card.hidden).length;
+    feedback.value = visible + ' / ' + categories.length;
+    empty.hidden = visible > 0;
+  });
+}
+
+const lookup = document.getElementById('inquiry-items');
+const items = lookup ? JSON.parse(lookup.textContent) : {};
+const quoteList = new Map();
+const quoteKey = 'machinery100-quote-list';
+try {
+  for (const [id, quantity] of JSON.parse(localStorage.getItem(quoteKey) ?? '[]')) {
+    if (Object.hasOwn(items, id) && Number.isInteger(quantity) && quantity >= 1 && quantity <= 99999) {
+      quoteList.set(id, quantity);
+    }
+  }
+} catch {
+  // The quote list remains usable in this page when storage is unavailable.
+}
+
+function updateQuoteCount() {
+  for (const badge of document.querySelectorAll('[data-quote-count]')) {
+    badge.textContent = quoteList.size ? ' (' + quoteList.size + ')' : '';
+  }
+}
+function saveQuoteList() {
+  try {
+    localStorage.setItem(quoteKey, JSON.stringify([...quoteList]));
+  } catch {
+    // The current page still holds the selected items.
+  }
+  updateQuoteCount();
+}
+updateQuoteCount();
+
+for (const button of document.querySelectorAll('[data-add-quote]')) {
+  const id = button.dataset.addQuote;
+  const refresh = () => button.setAttribute('aria-pressed', String(quoteList.has(id)));
+  button.hidden = false;
+  refresh();
+  button.addEventListener('click', () => {
+    if (quoteList.has(id)) quoteList.delete(id);
+    else quoteList.set(id, 1);
+    saveQuoteList();
+    refresh();
+  });
+}
+
 const catalogSearch = document.querySelector('[data-catalog-search]');
 if (catalogSearch) {
   const query = catalogSearch.querySelector('input');
@@ -37,10 +96,13 @@ if (catalogSearch) {
   function filterCategories() {
     const term = query.value.trim();
     const words = term.toLowerCase().split(/\s+/);
+    const normalized = term.toLowerCase().replace(/[\s-]/g, '');
+    const canNormalize = normalized && /[0-9]/.test(normalized);
     let count = 0;
     for (const row of rows) {
       const name = row.dataset.searchName.toLowerCase();
-      row.hidden = !words.every((word) => name.includes(word));
+      row.hidden = !words.every((word) => name.includes(word)) &&
+        !(canNormalize && name.replace(/[\s-]/g, '').includes(normalized));
       if (!row.hidden) count++;
     }
     empty.hidden = count > 0;
@@ -51,6 +113,11 @@ if (catalogSearch) {
   catalogSearch.hidden = false;
   query.addEventListener('input', filterCategories);
   query.addEventListener('focus', filterCategories);
+  function focusFromHeader() {
+    if (location.hash === '#catalog-search') query.focus({ preventScroll: true });
+  }
+  window.addEventListener('hashchange', focusFromHeader);
+  focusFromHeader();
   catalogSearch.addEventListener('focusout', (event) => {
     if (!catalogSearch.contains(event.relatedTarget)) results.hidden = true;
   });
@@ -102,7 +169,6 @@ if (form) {
   const validTypes = new Set([...type.options].map((option) => option.value));
   const params = new URL(location.href).searchParams;
   const fromQuery = params.get('type');
-  const items = JSON.parse(document.getElementById('inquiry-items').textContent);
   const id = params.get('item');
   const item = Object.hasOwn(items, id) && items[id].type === fromQuery ? items[id] : null;
   const term = (params.get('q') ?? '').slice(0, 100);
@@ -111,7 +177,63 @@ if (form) {
   const locale = document.documentElement.lang;
   let draftUrl;
 
-  const values = () => ({ ...Object.fromEntries(new FormData(form)), locale });
+  const quoteSection = form.querySelector('#quote-list');
+  const quoteLines = form.querySelector('[data-quote-lines]');
+  const quoteEmpty = form.querySelector('[data-quote-empty]');
+  const uploads = form.elements.files;
+  let submissionId;
+
+  function renderQuoteList() {
+    quoteEmpty.hidden = quoteList.size > 0;
+    quoteLines.replaceChildren();
+    for (const [id, quantity] of quoteList) {
+      const line = document.createElement('div');
+      line.className = 'quote-line';
+      const name = document.createElement('span');
+      name.textContent = items[id].name;
+      const label = document.createElement('label');
+      label.textContent = quoteLines.dataset.quantity;
+      const field = document.createElement('input');
+      field.type = 'number';
+      field.min = '1';
+      field.max = '99999';
+      field.required = true;
+      field.value = quantity;
+      field.setAttribute('aria-label', quoteLines.dataset.quantity + ' · ' + items[id].name);
+      field.addEventListener('change', () => {
+        if (!field.checkValidity()) return;
+        quoteList.set(id, field.valueAsNumber);
+        saveQuoteList();
+      });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = quoteLines.dataset.remove;
+      remove.setAttribute('aria-label', quoteLines.dataset.remove + ' · ' + items[id].name);
+      remove.addEventListener('click', () => {
+        quoteList.delete(id);
+        saveQuoteList();
+        submissionId = undefined;
+        renderQuoteList();
+        uploads.focus();
+        updateBudget();
+      });
+      label.append(field);
+      line.append(name, label, remove);
+      quoteLines.append(line);
+    }
+  }
+
+  quoteSection.hidden = false;
+  uploads.closest('label').hidden = false;
+  document.getElementById('file-hint').hidden = false;
+  renderQuoteList();
+
+  const values = () => {
+    const data = new FormData(form);
+    data.delete('files');
+    return { ...Object.fromEntries(data), locale };
+  };
+  const hasExtras = () => quoteList.size > 0 || uploads.files.length > 0;
 
   function refreshType() {
     hint.textContent = hint.dataset['hint' + type.value.charAt(0).toUpperCase() + type.value.slice(1)] ??
@@ -128,6 +250,8 @@ if (form) {
   }
 
   function updateBudget() {
+    form.elements.requirements.required = !hasExtras();
+    budget.parentElement.hidden = hasExtras();
     const used = inquiryMessage(values()).length;
     budget.textContent = used + ' / ' + inquiryLimits.message;
     budget.classList.toggle('over', used > inquiryLimits.message);
@@ -182,7 +306,7 @@ if (form) {
     showStatus(Object.hasOwn(errors, result?.error) ? errors[result.error] : 'unconfirmed');
   }
 
-  type.value = initialType;
+  type.value = initialType || (quoteList.size ? (quoteList.size === 1 ? items[quoteList.keys().next().value].type : 'project') : '');
   submit.disabled = false;
   prepareDraft.disabled = false;
   refreshType();
@@ -190,19 +314,24 @@ if (form) {
   type.addEventListener('change', refreshType);
   form.addEventListener('input', (event) => {
     event.target.setCustomValidity?.('');
+    submissionId = undefined;
     if (!draft.hidden) revokeDraft();
     showStatus('');
     updateBudget();
   });
 
+  uploads.addEventListener('change', updateBudget);
+
   prepareDraft.addEventListener('click', () => {
-    if (!validateTextFields()) return;
+    if (!validateTextFields() || [...quoteLines.querySelectorAll('input')].some((field) => !field.reportValidity())) return;
     revokeDraft();
     const lines = publicFields.filter((field) => field.value.trim()).map((field) => {
       const label = field.labels[0].firstChild.textContent;
       const value = field === type ? type.selectedOptions[0].textContent : field.value.trim();
       return label + ': ' + value;
     });
+    for (const [id, quantity] of quoteList) lines.push(items[id].name + ' × ' + quantity);
+    for (const file of uploads.files) lines.push(file.name);
     const text = lines.join('\n');
     draftUrl = URL.createObjectURL(new Blob([text + '\n'], { type: 'text/plain;charset=utf-8' }));
     download.href = draftUrl;
@@ -219,11 +348,33 @@ if (form) {
     event.preventDefault();
     if (fields.disabled || !validateTextFields()) return;
     const data = values();
-    const { error } = prepareInquiry(data);
+    const extended = hasExtras() || Boolean(submissionId);
+    const files = [...uploads.files];
+    if (files.length > 3 || files.some((file) => file.size < 1 || file.size > 5000000 ||
+        !/\.(jpe?g|png|webp|xlsx?|csv)$/i.test(file.name)) || files.reduce((size, file) => size + file.size, 0) > 10000000) {
+      showStatus('invalidFiles');
+      status.focus();
+      return;
+    }
+    const { error } = prepareInquiry(extended ? { ...data, requirements: 'Inquiry with files or a quote list.' } : data);
     if (error) {
       showStatus(error === 'message_too_long' ? 'tooLong' : 'invalid');
       status.focus();
       return;
+    }
+
+    let body = JSON.stringify(data);
+    if (extended) {
+      if (!globalThis.crypto?.randomUUID) {
+        showStatus('storageError');
+        status.focus();
+        return;
+      }
+      submissionId ??= crypto.randomUUID();
+      body = new FormData();
+      const lines = [...quoteList].map(([id, quantity]) => ({ id, quantity }));
+      body.set('inquiry', JSON.stringify({ ...data, lines, submissionId }));
+      for (const file of files) body.append('files', file);
     }
 
     fields.disabled = true;
@@ -231,11 +382,23 @@ if (form) {
     try {
       const response = await fetch('/api/inquiries', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        headers: extended ? undefined : { 'Content-Type': 'application/json' },
+        body
       });
       const result = await response.json().catch(() => null);
-      if (response.status === 201 && result?.success === true && result.delivery === 'submitted') {
+      if (response.ok && result?.success === true && result.reference) {
+        quoteList.clear();
+        saveQuoteList();
+        resetFields();
+        renderQuoteList();
+        submissionId = undefined;
+        showStatus(result.delivery === 'submitted' ? 'success' : 'pending', 'success');
+        status.textContent += ' ' + status.dataset.received + result.reference;
+      } else if (extended && result?.error === 'invalid_files') {
+        showStatus('invalidFiles');
+      } else if (extended && response.status >= 400) {
+        showStatus('storageError');
+      } else if (response.status === 201 && result?.success === true && result.delivery === 'submitted') {
         resetFields();
         showStatus('success', 'success');
       } else {
