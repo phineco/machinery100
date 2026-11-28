@@ -117,11 +117,10 @@ function photoGallery(locale, photos) {
   return '<div class="gallery-grid">' + cards + '</div>';
 }
 
-function checklist(title, entries, ordered = false) {
-  const tag = ordered ? 'ol' : 'ul';
-  return '<section class="section wrap list-section"><h2>' + title + '</h2><' + tag + ' class="detail-list">' +
+function checklist(title, entries) {
+  return '<section class="section wrap list-section"><h2>' + title + '</h2><ul class="detail-list">' +
     entries.map(([label, description]) => '<li><h3>' + label + '</h3><p>' + description + '</p></li>').join('') +
-    '</' + tag + '></section>';
+    '</ul></section>';
 }
 
 function callToAction(locale, t, type, label = t.request) {
@@ -277,7 +276,21 @@ function manufacturing(locale, t) {
 
 function delivery(locale, t) {
   const topic = t.delivery;
-  return lead(topic) + checklist(t.nav.delivery, topic.steps, true) + callToAction(locale, t);
+  const steps = topic.steps.map(([title, description]) =>
+    '<li class="delivery-card"><h3>' + escapeHtml(title) + '</h3><p>' + escapeHtml(description) + '</p></li>'
+  ).join('');
+  const shipping = topic.shipping.map(([title, description]) =>
+    '<article class="delivery-card"><h3>' + escapeHtml(title) + '</h3><p>' + escapeHtml(description) + '</p></article>'
+  ).join('');
+  return lead(topic, button(contactFor(locale), t.request)) +
+    '<section class="section wrap delivery-section"><h2>' + escapeHtml(topic.processTitle) +
+    '</h2><ol class="delivery-grid delivery-steps">' + steps + '</ol></section>' +
+    '<section class="section delivery-band"><div class="wrap delivery-section"><h2>' + escapeHtml(topic.shippingTitle) +
+    '</h2><div class="delivery-grid">' + shipping + '</div><p>' + escapeHtml(topic.shippingNote) + '</p></div></section>' +
+    checklist(topic.termsTitle, topic.terms) +
+    '<section class="section delivery-band"><div class="wrap cta-inner"><div><h2>' + escapeHtml(topic.inspectionTitle) +
+    '</h2><p>' + escapeHtml(topic.inspectionDescription) + '</p></div>' +
+    button(pathFor(locale, 'manufacturing'), t.factoryLink, 'outline') + '</div></section>';
 }
 
 function contact(locale, t) {

@@ -122,14 +122,32 @@ export const content = {
       qualityText: 'Include the model or part number and any dimensions, tolerances or documents your team needs to review. We’ll confirm what can be supplied for that item.'
     },
     delivery: {
-      title: 'Delivery & support',
-      description: 'From the first inquiry to shipment, we review the details that apply to your order.',
+      title: 'Services, delivery & support',
+      description: 'See how we check fit, confirm your quote, inspect the goods and prepare shipment for machines, attachments and spare parts.',
+      processTitle: 'From inquiry to shipment',
       steps: [
-        ['Share your requirements', 'Tell us the machine or part, quantity, destination and delivery window.'],
-        ['Confirm the configuration', 'We review the model, fit or configuration and the available production or supply option.'],
-        ['Review the quote and inspection scope', 'Agree on pricing, lead time, documents and any checks required before shipment.'],
-        ['Agree on the shipping and support terms', 'Confirm packaging, transport arrangements and order-specific support before proceeding.']
-      ]
+        ['Inquiry & selection', 'Send the model or part number, quantity, destination and target delivery window. If the model is unknown, share the job or photos of the machine, mount or part.'],
+        ['Fit & specification check', 'We check machine configuration, attachment dimensions and hydraulic requirements where applicable, or match the part number and serial number. We flag any measurements or details still needed.'],
+        ['Written quotation', 'Review the confirmed model or configuration, quantity, price, packing, estimated lead time, trade term and named port or place. The quote lists payment terms and validity.'],
+        ['Order confirmation & payment', 'Check the agreed scope against the order confirmation or contract, then follow the payment schedule and milestones stated there.'],
+        ['Preparation & pre-shipment inspection', 'Confirm the scope before shipment. Depending on the goods, checks may cover model, quantity, condition, critical dimensions, operation or packing. Agree on which photos or records you need.'],
+        ['Loading & shipping documents', 'Confirm packing, shipping marks and the planned dispatch. We coordinate the documents agreed for the shipment and share the latest schedule.']
+      ],
+      shippingTitle: 'Shipping options',
+      shipping: [
+        ['Full container (FCL)', 'Consider a dedicated container for machines or larger mixed orders of attachments and parts. We review package dimensions, weights and how the cargo can be secured.'],
+        ['Shared container (LCL)', 'An option for smaller batches of parts or attachments. We check the packed volume, handling and protection before recommending it.'],
+        ['Special cargo', 'For oversized or heavy cargo, we review packed dimensions and weight with the forwarder to confirm the equipment, route and handling.']
+      ],
+      shippingNote: 'The quotation states the trade term, named port or place, freight basis and estimated schedule. Sailing and arrival dates depend on booking and transit.',
+      termsTitle: 'Payment, documents & after-sales',
+      terms: [
+        ['Payment terms', 'Payment method, currency, deposit if applicable and balance milestones are agreed per order and recorded in writing.'],
+        ['Shipping documents', 'Confirm the commercial invoice, packing list and bill of lading or other transport document as applicable. Tell us early if you need a certificate of origin, manual or other documents so we can check availability.'],
+        ['Warranty & support', 'The quotation or contract states any warranty, its start date and scope, how wear parts are handled and how to request support. For an existing order, include the order reference and the model, serial number or part number.']
+      ],
+      inspectionTitle: 'Inspection before dispatch',
+      inspectionDescription: 'Tell us what you need to verify before release, such as a model or part marking, mounting dimensions, a functional check or packing photos. We’ll confirm the checks and records available for those goods.'
     },
     contact: {
       title: 'Tell us what you’re sourcing',
@@ -303,13 +321,31 @@ export const content = {
     },
     delivery: {
       title: '交付与支持',
-      description: '从收到需求到安排出运，我们逐项核对适用于您的订单条件。',
+      description: '了解整机、属具和配件从选型、适配核对、报价到验货出运的流程，以及各阶段要确认的事项。',
+      processTitle: '从询盘到出运',
       steps: [
-        ['提交采购需求', '说明设备或配件、数量、目的地及计划交付时间。'],
-        ['确认机型和配置', '根据工况、尺寸和适配要求核对供货选项。'],
-        ['核对报价与验收要求', '确认价格、预计交期、可提供的文件及出运前的检验项目。'],
-        ['确认运输与支持条件', '在订单推进前核对包装、运输安排及适用的支持条件。']
-      ]
+        ['询盘与初步选型', '提供机型或件号、数量、目的地和计划交付时间。型号不明时，可说明工况，或附上整机、安装接口或旧件照片。'],
+        ['核对适配与规格', '核对整机配置、属具安装尺寸和适用的液压参数，或按件号与序列号核配备件。需要补测尺寸或补充资料时，我们会逐项说明。'],
+        ['书面报价', '核对型号或配置、数量、价格、包装、预计交期、贸易术语及指定港口或地点。报价单注明付款条件与有效期。'],
+        ['确认订单与付款', '核对订单确认书或合同中的供货范围，按其中约定的付款方式、时间和节点执行。'],
+        ['备货与出运前检验', '出运前确认验货范围。按货物类型核对型号、数量、外观、关键尺寸、功能或包装，并约定需要提交的照片或记录。'],
+        ['装运与交付单证', '确认包装、唛头及预计出运安排。按订单约定协调所需单证，并同步最新运输计划。']
+      ],
+      shippingTitle: '运输方式',
+      shipping: [
+        ['整柜（FCL）', '适合整机或批量混装属具和配件。根据包装尺寸、重量和货物固定要求核对柜型及装载方案。'],
+        ['拼箱（LCL）', '可用于较小批次的配件或属具。报价前核对包装体积、装卸要求和防护方式。'],
+        ['特殊货物运输', '超尺寸或超重货物先提供包装后的尺寸和重量，由我们与货代核对运输设备、路线和装卸要求。']
+      ],
+      shippingNote: '报价注明贸易术语、指定港口或地点、运费口径及预计运输计划。船期和到港时间以实际订舱及运输进度为准。',
+      termsTitle: '付款、单证与售后',
+      terms: [
+        ['付款条件', '按订单书面确认付款方式、币种、适用的预付款及尾款节点。'],
+        ['出运单证', '按订单核对商业发票、装箱单、提单或其他运输单据。需要原产地证、操作手册或其他文件时，请在报价前提出，以便确认能否提供。'],
+        ['质保与售后', '报价或合同注明适用的质保、起算时间、覆盖范围、易损件条款及售后申请方式。已有订单请提供订单号及机型、序列号或件号。']
+      ],
+      inspectionTitle: '出运前验货',
+      inspectionDescription: '如需核对铭牌或件号、安装尺寸、功能测试或装箱照片，请在询盘时注明。我们会按该批货物确认可安排的检查和可提供的记录。'
     },
     contact: {
       title: '告诉我们您的采购需求',

@@ -130,7 +130,15 @@ h3 { font-size: 21px; }
 .detail-list li { border-bottom: 1px solid var(--line); padding: 1.5rem .3rem; }
 .detail-list h3 { font-size: 21px; margin-bottom: .45rem; }
 .detail-list p { max-width: 65ch; color: var(--muted); }
-ol.detail-list { list-style: decimal; padding-inline-start: 1.4rem; }
+.delivery-section > h2 { margin-bottom: 24px; }
+.delivery-section > p { max-width: 76ch; margin-top: 18px; }
+.delivery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 0; padding: 0; }
+.delivery-steps { list-style: decimal-leading-zero inside; }
+.delivery-card { padding: 22px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+.delivery-steps > li::marker { color: var(--copper-hover); font-size: 13px; font-weight: 650; }
+.delivery-steps h3 { margin-top: 6px; }
+.delivery-card p { margin-top: 8px; }
+.delivery-band { background: var(--mist); border-block: 1px solid var(--section-line); }
 
 .tour-section { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: clamp(24px, 6vw, 95px); padding-bottom: 0; }
 .tour-figure { position: relative; display: grid; place-items: center; width: 100%; min-width: 0; min-height: 320px; aspect-ratio: 1.48; background: var(--mist); }
@@ -187,6 +195,7 @@ ol.detail-list { list-style: decimal; padding-inline-start: 1.4rem; }
   .site-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 800px) {
+  .delivery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   .capability-heading { align-items: flex-start; flex-direction: column; }
   .section { padding-block: 52px; }
   .hero { padding-block: 44px; }
@@ -205,6 +214,7 @@ ol.detail-list { list-style: decimal; padding-inline-start: 1.4rem; }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 530px) {
+  .delivery-grid { grid-template-columns: 1fr; }
   .capability-grid { grid-template-columns: 1fr; }
   .header-actions .button { display: none; }
   .wordmark { font-size: 1rem; gap: 5px; }
