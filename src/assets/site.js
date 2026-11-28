@@ -1,31 +1,5 @@
 import { inquiryLimits, inquiryMessage, prepareInquiry } from './inquiry-payload.js';
 
-const menu = document.querySelector('.menu-toggle');
-const nav = document.querySelector('#site-nav');
-
-if (menu && nav) {
-  const narrow = matchMedia('(max-width: 1120px)');
-  function resetMenu() {
-    menu.hidden = !narrow.matches;
-    menu.toggleAttribute('data-ready', narrow.matches);
-    menu.setAttribute('aria-expanded', 'false');
-    nav.toggleAttribute('data-collapsed', narrow.matches);
-  }
-  resetMenu();
-  narrow.addEventListener('change', resetMenu);
-  menu.addEventListener('click', () => {
-    const open = menu.getAttribute('aria-expanded') !== 'true';
-    menu.setAttribute('aria-expanded', String(open));
-    nav.toggleAttribute('data-collapsed', !open);
-  });
-  nav.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && narrow.matches) {
-      resetMenu();
-      menu.focus();
-    }
-  });
-}
-
 const filters = document.querySelector('[data-filters]');
 if (filters) {
   const categories = [...document.querySelectorAll('.category-list > li')];

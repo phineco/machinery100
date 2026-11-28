@@ -13,7 +13,6 @@ export const content = {
       details: 'Selection guide', related: 'Related categories'
     },
     skip: 'Skip to content',
-    menu: 'Menu',
     brandLine: 'Compact machines, attachments and spare parts',
     nav: {
       home: 'Home',
@@ -190,7 +189,6 @@ export const content = {
       details: '选型说明', related: '相关品类'
     },
     skip: '跳到正文',
-    menu: '菜单',
     brandLine: '小微工程机械、属具与配件采购',
     nav: {
       home: '首页',

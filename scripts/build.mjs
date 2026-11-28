@@ -83,7 +83,6 @@ function header(locale, page, t) {
     '</span><a href="https://wa.me/' + whatsapp + '">WhatsApp <span>+' + whatsapp + '</span></a>' +
     '<a href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div></div><div class="wrap header-inner">' +
     wordmark(locale) +
-    '<button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" hidden>' + t.menu + '</button>' +
     '<nav class="site-nav" id="site-nav" aria-label="' + (locale === 'en' ? 'Main navigation' : '主导航') + '">' + navLinks + '</nav>' +
     '<div class="header-actions"><a class="language-link" data-language-switch href="' + pathFor(other, page) + '" lang="' + other + '" hreflang="' + other + '">' + content[other].language + '</a>' +
     '<a class="header-search" href="' + pathFor(locale) + '#catalog-search">' +
